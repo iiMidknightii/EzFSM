@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   version="1.1"
+   id="svg3"
+   sodipodi:docname="ScriptExtend.svg"
+   inkscape:version="1.4-rc1 (61ec3f2, 2024-09-26)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs3" />
+  <sodipodi:namedview
+     id="namedview3"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="29.890625"
+     inkscape:cx="24.288552"
+     inkscape:cy="15.171981"
+     inkscape:window-width="3840"
+     inkscape:window-height="2131"
+     inkscape:window-x="1341"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3" />
+  <path
+     fill="#e0e0e0"
+     d="M 8.6666693,1 A 3.0666659,3.0666659 0 0 0 5.5999999,4.0666659 V 14.8 H 0.99999996 v 4.6 A 3.0666659,3.0666659 0 0 0 4.0666658,22.466669 H 14.8 a 3.0666659,3.0666659 0 0 0 2.64193,-1.533338 H 11.733331 V 14.8 h 6.133338 V 7.1333315 h 4.6 V 4.0666659 A 3.0666659,3.0666659 0 0 0 19.4,1 Z"
+     id="path1"
+     style="stroke-width:1.53331" />
+  <path
+     fill-opacity="0.2"
+     d="M 8.6666693,1 A 3.0666659,3.0666659 0 0 0 5.5999999,4.0666659 V 14.8 H 0.99999996 v 4.6 a 3.0666659,3.0666659 0 1 0 6.13333154,0 V 4.0666659 a 1.5333343,1.5333343 0 0 1 3.0666685,0 v 4.6000034 h 7.666669 V 7.1333315 H 11.733331 V 4.0666659 A 3.0666659,3.0666659 0 0 0 8.6666693,1 Z M 2.533333,16.333331 H 5.5999999 V 19.4 a 1.5333339,1.5333339 0 0 1 -3.0666669,0 z"
+     id="path2"
+     style="stroke-width:1.53331" />
+  <path
+     fill="#5fb2ff"
+     d="m 24,17.866669 -4.6,-4.6 v 3.066662 H 13.266669 V 19.4 H 19.4 v 3.066669 z"
+     id="path3"
+     style="stroke-width:1.53331" />
+</svg>

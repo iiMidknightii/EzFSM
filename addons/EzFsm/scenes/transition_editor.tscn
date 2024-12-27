@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://dgrub3fr6h6k5"]
+
+[ext_resource type="Script" path="res://addons/EzFsm/scripts/transition_editor.gd" id="1_71kkg"]
+[ext_resource type="Script" path="res://addons/EzFsm/scripts/script_attacher.gd" id="3_kkgpj"]
+[ext_resource type="Texture2D" uid="uid://dpejuy8j6ohpd" path="res://addons/EzFsm/icons/StateTransitionWarning.svg" id="3_vcp8w"]
+
+[sub_resource type="StateTransition" id="StateTransition_hsck2"]
+
+[node name="TransitionEditor" type="HBoxContainer"]
+offset_right = 181.0
+offset_bottom = 62.0
+script = ExtResource("1_71kkg")
+transition = SubResource("StateTransition_hsck2")
+
+[node name="LabelButton" type="Button" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "No script attached, no transition will occur.
+No state to transition from.
+No state to transition to."
+mouse_filter = 1
+text = "..."
+icon = ExtResource("3_vcp8w")
+
+[node name="Spacer" type="Control" parent="."]
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="ScriptAttacher" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 8
+script = ExtResource("3_kkgpj")

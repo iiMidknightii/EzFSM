@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   version="1.1"
+   id="svg3"
+   sodipodi:docname="ScriptRemove.svg"
+   inkscape:version="1.4-rc1 (61ec3f2, 2024-09-26)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs3" />
+  <sodipodi:namedview
+     id="namedview3"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="119.5625"
+     inkscape:cx="8.0041819"
+     inkscape:cy="8.6691061"
+     inkscape:window-width="3840"
+     inkscape:window-height="2131"
+     inkscape:window-x="1341"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3" />
+  <path
+     fill="#e0e0e0"
+     d="M 8.8571429,1 A 3.1428571,3.1428571 0 0 0 5.7142857,4.1428571 V 15.142857 H 1 v 4.714286 A 3.1428571,3.1428571 0 0 0 4.1428571,23 h 8.8549999 l -2.489143,-2.489143 2.222,-2.222 -2.222,-2.222 5.555,-5.555 2.222,2.222 V 7.2857143 H 23 V 4.1428571 A 3.1428571,3.1428571 0 0 0 19.857143,1 Z"
+     id="path1"
+     style="stroke-width:1.57143" />
+  <path
+     fill-opacity="0.2"
+     d="M 8.8571429,1 A 3.1428571,3.1428571 0 0 0 5.7142857,4.1428571 V 15.142857 H 1 v 4.714286 a 3.1428572,3.1428572 0 1 0 6.2857143,0 V 4.1428571 a 1.5714286,1.5714286 0 0 1 3.1428567,0 v 4.7142858 h 7.857143 V 7.2857143 H 12 V 4.1428571 A 3.1428571,3.1428571 0 0 0 8.8571429,1 Z M 2.5714286,16.714286 h 3.1428571 v 3.142857 a 1.5714286,1.5714286 0 0 1 -3.1428571,0 z"
+     id="path2"
+     style="stroke-width:1.57143" />
+  <path
+     fill="#ff5f5f"
+     d="m 20.507714,18.285714 2.222,-2.222 -2.222,-2.222 -2.222,2.222 -2.222,-2.222 -2.222,2.222 2.222,2.222 -2.222,2.222 2.222,2.222 2.222,-2.222 2.222,2.222 2.222,-2.222 z"
+     id="path3"
+     style="stroke-width:1.57143" />
+</svg>

@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://d21t78hxn4a38"]
+
+[ext_resource type="Script" path="res://addons/EzFsm/scripts/state_machine_editor.gd" id="1_o7ypp"]
+[ext_resource type="Texture2D" uid="uid://dsvhgx8v4gd2b" path="res://addons/EzFsm/icons/State.svg" id="2_gkif3"]
+
+[node name="StateMachineEditor" type="GraphEdit"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+grid_pattern = 1
+connection_lines_curvature = 1.0
+script = ExtResource("1_o7ypp")
+
+[node name="PopupMenu" type="PopupMenu" parent="."]
+size = Vector2i(111, 100)
+item_count = 1
+item_0/text = "Add State"
+item_0/icon = ExtResource("2_gkif3")

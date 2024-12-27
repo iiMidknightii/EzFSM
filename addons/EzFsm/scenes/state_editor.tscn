@@ -1,0 +1,114 @@
+[gd_scene load_steps=10 format=3 uid="uid://ctwpl3i2680me"]
+
+[ext_resource type="StyleBox" uid="uid://h8oaicy58742" path="res://addons/EzFsm/theme/graph_node_panel.tres" id="1_jlveb"]
+[ext_resource type="Script" path="res://addons/EzFsm/scripts/state_editor.gd" id="1_wa4vx"]
+[ext_resource type="StyleBox" uid="uid://p4khabnx08qw" path="res://addons/EzFsm/theme/graph_node_panel_selected.tres" id="2_7rwd2"]
+[ext_resource type="Texture2D" uid="uid://t5bg71yi05wg" path="res://addons/EzFsm/icons/DefaultState.svg" id="3_0ugg2"]
+[ext_resource type="Texture2D" uid="uid://b3pd0rcj36vxk" path="res://addons/EzFsm/icons/DisabledState.svg" id="4_b5kau"]
+[ext_resource type="Texture2D" uid="uid://1bbixx71y7jq" path="res://addons/EzFsm/icons/SelfConnect.svg" id="5_8gsmt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gbf8f"]
+resource_local_to_scene = true
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.662745, 0.662745, 0.662745, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0g4n7"]
+resource_local_to_scene = true
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.662745, 0.662745, 0.662745, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+
+[sub_resource type="State" id="State_u05nq"]
+
+[node name="State1" type="GraphNode"]
+custom_minimum_size = Vector2(240, 0)
+offset_right = 9.0
+offset_bottom = 55.0
+theme_override_styles/panel = ExtResource("1_jlveb")
+theme_override_styles/panel_selected = ExtResource("2_7rwd2")
+theme_override_styles/titlebar = SubResource("StyleBoxFlat_gbf8f")
+theme_override_styles/titlebar_selected = SubResource("StyleBoxFlat_0g4n7")
+title = "State1"
+slot/0/left_enabled = true
+slot/0/left_type = 0
+slot/0/left_color = Color(1, 1, 1, 1)
+slot/0/left_icon = null
+slot/0/right_enabled = true
+slot/0/right_type = 0
+slot/0/right_color = Color(1, 1, 1, 1)
+slot/0/right_icon = null
+slot/0/draw_stylebox = true
+script = ExtResource("1_wa4vx")
+state = SubResource("State_u05nq")
+
+[node name="ConnectionPort" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="ConnectionPort"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+tooltip_text = "Change the color of the State Node titlebar."
+color = Color(0.463068, 0.463068, 0.463068, 1)
+edit_alpha = false
+
+[node name="DefaultButton" type="Button" parent="ConnectionPort"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+tooltip_text = "Sets the state as the state machine's default starting state."
+focus_mode = 0
+theme_override_colors/icon_normal_color = Color(0.466181, 0.466181, 0.466181, 1)
+theme_override_colors/icon_pressed_color = Color(0.434631, 0.77047, 0.293577, 1)
+theme_override_colors/icon_hover_color = Color(0.35497, 0.437234, 0.592521, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0.35497, 0.437234, 0.592521, 1)
+toggle_mode = true
+icon = ExtResource("3_0ugg2")
+flat = true
+
+[node name="DisabledButton" type="Button" parent="ConnectionPort"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+tooltip_text = "Disables the state from activating or processing."
+focus_mode = 0
+theme_override_colors/icon_normal_color = Color(0.466181, 0.466181, 0.466181, 1)
+theme_override_colors/icon_pressed_color = Color(0.946125, 0.449731, 0.513232, 1)
+theme_override_colors/icon_hover_color = Color(0.35497, 0.437234, 0.592521, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0.35497, 0.437234, 0.592521, 1)
+toggle_mode = true
+icon = ExtResource("4_b5kau")
+flat = true
+
+[node name="SelfConnectButton" type="Button" parent="ConnectionPort"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+tooltip_text = "Allows the state to transition to itself."
+focus_mode = 0
+theme_override_colors/icon_normal_color = Color(0.466181, 0.466181, 0.466181, 1)
+theme_override_colors/icon_pressed_color = Color(0.478833, 0.776793, 0.947606, 1)
+theme_override_colors/icon_hover_color = Color(0.35497, 0.437234, 0.592521, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0.35497, 0.437234, 0.592521, 1)
+toggle_mode = true
+icon = ExtResource("5_8gsmt")
+flat = true
