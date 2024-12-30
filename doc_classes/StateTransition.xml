@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="StateTransition" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		This class allows defining transition logic between [State] objects.
+	</brief_description>
+	<description>
+		When added to a [State], each transition will be evaluated during the respective virtual method calls after the active state.  If a transition returns [code]true[/code] in any of those virtual calls, the [StateMachine] will execute a transition to [member to_state].  Signals and other methods can also execute the transition via [method request_transition].
+		[b]Note:[/b] It is not recommended to instantiate this class directly.  Instead, use [State] [code]add_transition_to[/code] or [StateMachine] [code]add_transition_between[/code].
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="_input" qualifiers="virtual">
+			<return type="bool" />
+			<param index="0" name="input_event" type="InputEvent" />
+			<description>
+				Called after the active [State]'s [code]_active_input[/code].  If [code]true[/code] is returned, the [StateMachine] attempts to transition to [param to_state].
+			</description>
+		</method>
+		<method name="_physics_process" qualifiers="virtual">
+			<return type="bool" />
+			<param index="0" name="delta" type="float" />
+			<description>
+				Called after the active [State]'s [code]_active_physics_process[/code].  If [code]true[/code] is returned, the [StateMachine] attempts to transition to [param to_state].
+			</description>
+		</method>
+		<method name="_process" qualifiers="virtual">
+			<return type="bool" />
+			<param index="0" name="delta" type="float" />
+			<description>
+				Called after the active [State]'s [code]_active_process[/code].  If [code]true[/code] is returned, the [StateMachine] attempts to transition to [param to_state].
+			</description>
+		</method>
+		<method name="_shortcut_input" qualifiers="virtual">
+			<return type="bool" />
+			<param index="0" name="input_event" type="InputEvent" />
+			<description>
+				Called after the active [State]'s [code]_active_shortcut_input[/code].  If [code]true[/code] is returned, the [StateMachine] attempts to transition to [param to_state].
+			</description>
+		</method>
+		<method name="_unhandled_input" qualifiers="virtual">
+			<return type="bool" />
+			<param index="0" name="input_event" type="InputEvent" />
+			<description>
+				Called after the active [State]'s [code]_active_unhandled_input[/code].  If [code]true[/code] is returned, the [StateMachine] attempts to transition to [param to_state].
+			</description>
+		</method>
+		<method name="_unhandled_key_input" qualifiers="virtual">
+			<return type="bool" />
+			<param index="0" name="input_event" type="InputEvent" />
+			<description>
+				Called after the active [State]'s [code]_active_unhandled_key_input[/code].  If [code]true[/code] is returned, the [StateMachine] attempts to transition to [param to_state].
+			</description>
+		</method>
+		<method name="get_state_machine" qualifiers="const">
+			<return type="StateMachine" />
+			<description>
+				Returns the [StateMachine] this transition is associated with.  Returns [code]null[/code] if the transition hasn't been added to one.
+			</description>
+		</method>
+		<method name="request_transition">
+			<return type="bool" />
+			<description>
+				Allows the transition to execute when outside the standard virtual method overrides, e.g. in a connected signal [Callable].
+			</description>
+		</method>
+		<method name="set_state_input">
+			<return type="void" />
+			<param index="0" name="state_input" type="StateInput" />
+			<description>
+				Stores the [param state_input] for [param to_state] to use when performing activation logic.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="context" type="Node" setter="set_context" getter="get_context">
+			The context node the state machine is manipulating.
+		</member>
+		<member name="from_state" type="State" setter="" getter="get_from_state">
+			The state that will be deactivated if the transition requests.
+		</member>
+		<member name="to_state" type="State" setter="set_to_state" getter="get_to_state">
+			The state that will be activated if the transition requests.
+		</member>
+	</members>
+</class>

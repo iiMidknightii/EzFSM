@@ -1,7 +1,7 @@
 extends State
 
 
-func _start(input: StateInput) -> void:
+func _start(_input: StateInput) -> void:
 	print(state_name, " started")
 
 
@@ -11,25 +11,25 @@ func _can_activate(input: StateInput) -> bool:
 	return true
 
 
-func _activate(input: StateInput) -> void:
+func _activate(_input: StateInput) -> void:
 	print(state_name, " activated")
 
 
-func _active_process(delta: float) -> void:
+func _active_process(_delta: float) -> void:
 	context.count += 1
 
 
-func _inactive_process(delta: float) -> void:
+func _inactive_process(_delta: float) -> void:
 	if context.count % 25 == 0:
 		print("test1 inactive process")
 
 
-func _active_physics_process(delta: float) -> void:
+func _active_physics_process(_delta: float) -> void:
 	if context.count % 20 == 0:
 		print("test1 active physics")
 
 
-func _inactive_physics_process(delta: float) -> void:
+func _inactive_physics_process(_delta: float) -> void:
 	if context.count % 15 == 0:
 		print("test 1 inactive physics")
 

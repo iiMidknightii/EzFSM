@@ -1,5 +1,7 @@
 @tool extends HBoxContainer
 
+signal rebuild_requested
+
 const ScriptAttacher := preload("res://addons/EzFsm/scripts/script_attacher.gd")
 const StateTransitionIcon := preload("res://addons/EzFsm/icons/StateTransition.svg")
 const StateTransitionWarningIcon := preload("res://addons/EzFsm/icons/StateTransitionWarning.svg")
@@ -8,10 +10,14 @@ const StateTransitionWarningIcon := preload("res://addons/EzFsm/icons/StateTrans
 
 @onready var _label_button: Button = $LabelButton
 @onready var _attacher: ScriptAttacher = $ScriptAttacher
+@onready var _move_up_button: Button = $VBoxContainer/MoveUpButton
+@onready var _move_down_button: Button = $VBoxContainer/MoveDownButton
 
 func _ready() -> void:
 	_attacher.base_class = "StateTransition"
 	_label_button.pressed.connect(_on_label_button_pressed)
+	_move_up_button.pressed.connect(_on_move_button_pressed.bind(-1))
+	_move_down_button.pressed.connect(_on_move_button_pressed.bind(1))
 
 
 func _process(delta: float) -> void:
@@ -62,6 +68,20 @@ func set_transition(new_transition: StateTransition) -> void:
 
 	_attacher.object = transition
 
+	if transition and transition.from_state:
+		var idx := transition.from_state.get_transition_priority(transition)
+		_move_up_button.visible = idx != 0
+		_move_down_button.visible = idx != transition.from_state.get_all_transitions().size() - 1
+
+
 
 func _on_label_button_pressed() -> void:
 	EditorInterface.inspect_object(transition)
+
+
+func _on_move_button_pressed(by: int) -> void:
+	if transition and transition.from_state:
+		var prio := transition.from_state.get_transition_priority(transition)
+		prio = clampi(prio + by, 0, transition.from_state.get_all_transitions().size() - 1)
+		transition.from_state.move_transition_priority(transition, prio)
+		rebuild_requested.emit()

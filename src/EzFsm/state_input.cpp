@@ -11,4 +11,6 @@ StringName StateInput::get_previous_state() const {
 
 void StateInput::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_previous_state"), &StateInput::get_previous_state);
+
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "previous_state", PROPERTY_HINT_RESOURCE_TYPE, "State", PROPERTY_USAGE_NONE), "", "get_previous_state");
 }

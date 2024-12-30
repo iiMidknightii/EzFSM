@@ -1,6 +1,6 @@
 @tool extends GraphNode
 
-signal default_requested(state: State)
+signal rebuild_requested
 
 const StateIcon := preload("res://addons/EzFsm/icons/State.svg")
 const DefaultStateIcon := preload("res://addons/EzFsm/icons/DefaultState.svg")
@@ -17,10 +17,11 @@ const DefaultColor = Color.INDIAN_RED
 var _attacher: ScriptAttacher
 
 @onready var _connection_port: Control = $ConnectionPort
-@onready var _color_picker_button: ColorPickerButton = $ConnectionPort/ColorPickerButton
 @onready var _default_button: Button = $ConnectionPort/DefaultButton
 @onready var _disabled_button: Button = $ConnectionPort/DisabledButton
 @onready var _self_button: Button = $ConnectionPort/SelfConnectButton
+@onready var _color_button: Button = $ConnectionPort/ColorButton
+@onready var _color_picker: ColorPicker = $ColorPicker
 @onready var _transitions: Array[TransitionEditor]
 
 var _color_time := 0.5
@@ -45,21 +46,21 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	_color_picker_button.color_changed.connect(_on_color_changed)
 	_default_button.pressed.connect(_on_default_requested)
 	_disabled_button.pressed.connect(_on_disabled_button_pressed)
 	_self_button.pressed.connect(_on_self_button_pressed)
+	_color_button.toggled.connect(_on_color_button_toggled)
+	_color_picker.color_changed.connect(_on_color_changed)
 
 	var settings := EditorInterface.get_editor_settings()
-	var picker := _color_picker_button.get_picker()
-	picker.color_mode = settings.get_setting("interface/inspector/default_color_picker_mode")
-	picker.picker_shape = settings.get_setting("interface/inspector/default_color_picker_shape")
+	_color_picker.color_mode = settings.get_setting("interface/inspector/default_color_picker_mode")
+	_color_picker.picker_shape = settings.get_setting("interface/inspector/default_color_picker_shape")
 
 
 func _process(delta: float) -> void:
 	var color: Color
 	if state:
-		color = state.node_color
+		color = state._node_color
 	else:
 		color = Color.BLACK
 
@@ -67,7 +68,14 @@ func _process(delta: float) -> void:
 	get_theme_stylebox("titlebar_selected").bg_color = color
 
 
+func _get_minimum_size() -> Vector2:
+	return Vector2(_color_picker.size.x, 0.0)
+
+
 func set_state(new_state: State) -> void:
+	if not is_node_ready():
+		await ready
+
 	if state:
 		state.changed.disconnect(_on_state_changed)
 
@@ -76,6 +84,10 @@ func set_state(new_state: State) -> void:
 
 	if state:
 		state.changed.connect(_on_state_changed)
+		var color = state._node_color
+		color.a = 1.0
+		_color_picker.color = color
+		_color_button.modulate = color
 	_on_state_changed()
 
 
@@ -87,17 +99,22 @@ func add_transition(transition: StateTransition) -> void:
 	var t_editor := TransitionEditorScene.instantiate()
 	t_editor.transition = transition
 	add_child(t_editor)
+	move_child(t_editor, -3)
+	move_child(_connection_port, -2)
+	move_child(_color_picker, -1)
 	set_slot(t_editor.get_index(), false, 0, Color.WHITE, true, 0, Color.SLATE_BLUE)
+	set_slot(get_new_transition_port(), true, 0, Color.WHITE, true, 0, Color.WHITE)
+	clear_slot(_color_picker.get_index())
 	_transitions.append(t_editor)
+	t_editor.rebuild_requested.connect(rebuild_requested.emit)
 
 
 func remove_transition(transition: StateTransition) -> void:
 	var t_editor := _get_editor_for_transition(transition)
-	clear_slot(t_editor.get_index())
 	_transitions.erase(t_editor)
+	clear_slot(t_editor.get_index())
 	remove_child(t_editor)
 	t_editor.queue_free()
-	queue_sort()
 
 
 func get_transition_port(transition: StateTransition) -> int:
@@ -117,13 +134,22 @@ func _get_editor_for_transition(transition: StateTransition) -> TransitionEditor
 
 
 func _on_color_changed(color: Color) -> void:
+	color.a = 1.0
+	_color_button.modulate = color
+
 	color.a = 0.9
 	if state:
-		state.node_color = color
+		state._node_color = color
 
+
+func _on_color_button_toggled(toggle: bool) -> void:
+	_color_picker.visible = toggle
+	size = Vector2.ZERO
 
 func _on_default_requested() -> void:
-	default_requested.emit(state)
+	if state:
+		state.get_state_machine().default_state = state
+	rebuild_requested.emit()
 
 
 func _on_disabled_button_pressed() -> void:

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="State" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Base class for states that are processed in a StateMachine.
+	</brief_description>
+	<description>
+		States are resources stored in a [StateMachine], where each can execute callbacks depending on whether it is the currently (single) active state or an inactive state.
+		Each state can attach a custom script to execute virual methods when the [StateMachine] undergoes its own [method _process], [method _physics_process], and [method _input]-like calls.
+		[b]Note:[/b] It is generally not recommended to update the [param context] node's properties or methods while inactive.  Inactive state processing is more for bookkeeping, timing, and other functionalities.
+		Attached to each state is a set of [StateTransition] resources that can execute followup logic to determine if another state should be activated by the [StateMachine].
+
+		[b]Note:[/b]It is not recommended to instantiate this class directly.  Instead, use [StateMachine] [code]add_state[/code] to create states.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="_activate" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="input" type="StateInput" />
+			<description>
+				Called when the state is activated by the [StateMachine].
+			</description>
+		</method>
+		<method name="_active_input" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="event" type="InputEvent" />
+			<description>
+				Called when the state is active and an input event is trigged.
+			</description>
+		</method>
+		<method name="_active_physics_process" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="delta" type="float" />
+			<description>
+				Called when the state is active and a physics step is performed.
+			</description>
+		</method>
+		<method name="_active_process" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="delta" type="float" />
+			<description>
+				Called when the state is active and a processing step is performed.
+			</description>
+		</method>
+		<method name="_active_shortcut_input" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="event" type="InputEvent" />
+			<description>
+				Called when the state is active and an unhandled shortcut input event is triggered in the tree.
+			</description>
+		</method>
+		<method name="_active_unhandled_input" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="event" type="InputEvent" />
+			<description>
+				Called when the state is active and an unhandled input event is triggered in the tree.
+			</description>
+		</method>
+		<method name="_active_unhandled_key_input" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="event" type="InputEvent" />
+			<description>
+				Called when the state is active and an unhandled key input event is triggered in the tree.
+			</description>
+		</method>
+		<method name="_can_activate" qualifiers="virtual">
+			<return type="bool" />
+			<param index="0" name="input" type="StateInput" />
+			<description>
+				Called before attempting to transition to the state.  The [StateInput] as well as other contextual data can be verified to determine if the state is ready to activate.  Return [true] if the activation can continue, [false] otherwise.
+			</description>
+		</method>
+		<method name="_deactivate" qualifiers="virtual">
+			<return type="void" />
+			<description>
+				Called right before a state goes inactive.  This is used to clean up anything before another state takes over active processing.
+			</description>
+		</method>
+		<method name="_inactive_input" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="event" type="InputEvent" />
+			<description>
+				Like [method _active_input], but only called when the state is inactive.
+			</description>
+		</method>
+		<method name="_inactive_physics_process" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="delta" type="float" />
+			<description>
+				Like [method _active_physics_process], but only called when the state is inactive.
+			</description>
+		</method>
+		<method name="_inactive_process" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="delta" type="float" />
+			<description>
+				Like [method _active_process], but only called when the state is inactive.
+			</description>
+		</method>
+		<method name="_inactive_shortcut_input" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="event" type="InputEvent" />
+			<description>
+				Like [method _active_shortcut_input], but only called when the state is inactive.
+			</description>
+		</method>
+		<method name="_inactive_unhandled_input" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="event" type="InputEvent" />
+			<description>
+				Like [method _active_unhandled_input], but only called when the state is inactive.
+			</description>
+		</method>
+		<method name="_inactive_unhandled_key_input" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="event" type="InputEvent" />
+			<description>
+				Like [method _active_unhandled_key_input], but only called when the state is inactive.
+			</description>
+		</method>
+		<method name="_start" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="input" type="StateInput" />
+			<description>
+				Called when the state is responsible for starting the [StateMachine].  Run only when the machine first starts or restarts.
+			</description>
+		</method>
+		<method name="_stop" qualifiers="virtual">
+			<return type="void" />
+			<description>
+				Called when the state is responsible for stopping the [StateMachine].
+			</description>
+		</method>
+		<method name="add_transition_to">
+			<return type="StateTransition" />
+			<param index="0" name="to_state" type="State" />
+			<description>
+				Creates a new [StateTransition] to [param to_state].
+			</description>
+		</method>
+		<method name="get_all_transitions" qualifiers="const">
+			<return type="StateTransition[]" />
+			<description>
+				Returns all the currently added transitions to other states.
+			</description>
+		</method>
+		<method name="get_sibling" qualifiers="const">
+			<return type="State" />
+			<param index="0" name="sibling_name" type="StringName" />
+			<description>
+				Returns a sibling state, if any, with the matching name.
+			</description>
+		</method>
+		<method name="get_state_machine" qualifiers="const">
+			<return type="StateMachine" />
+			<description>
+				Returns the [StateMachine] that owns this state.
+			</description>
+		</method>
+		<method name="get_transition_priority" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="transition" type="StateTransition" />
+			<description>
+				Returns the index of [param transition].  Transitions are processed in order starting from 0.
+			</description>
+		</method>
+		<method name="get_transition_to" qualifiers="const">
+			<return type="StateTransition" />
+			<param index="0" name="to_state" type="State" />
+			<description>
+				Returns a [StateTransition] that goes to [param] to_state, if any.
+			</description>
+		</method>
+		<method name="has_sibling" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="sibling_name" type="StringName" />
+			<description>
+				Returns [code]true[/code] if this state has a sibling with name matching [param sibling_name].
+			</description>
+		</method>
+		<method name="move_transition_priority">
+			<return type="void" />
+			<param index="0" name="transition" type="StateTransition" />
+			<param index="1" name="priority" type="int" />
+			<description>
+				Moves [param transition] to index [param priority], making it process in that order.
+			</description>
+		</method>
+		<method name="remove_transition">
+			<return type="void" />
+			<param index="0" name="transition" type="StateTransition" />
+			<description>
+				Removes [param] transition from the processing set.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="context" type="Node" setter="set_context" getter="get_context">
+			A node that the owning [StateMachine] is trying to control.  The machine and all states/transitions can access this node.
+		</member>
+		<member name="enabled" type="bool" setter="set_enabled" getter="is_enabled" default="true">
+			A flag that indicates if the state can be transitioned to, or if it will continue processing if already active.
+		</member>
+		<member name="state_name" type="StringName" setter="set_state_name" getter="get_state_name" default="&amp;&quot;&quot;">
+			A unique name for the state within the [StateMachine].
+		</member>
+		<member name="transitions_to_self" type="bool" setter="allow_transition_to_self" getter="can_transition_to_self" default="false">
+			If [code]false[/code], the state will not be allowed to transition to itself.
+		</member>
+	</members>
+	<signals>
+		<signal name="activated">
+			<param index="0" name="state_input" type="StateInput" />
+			<description>
+				Emitted when the state is activated by the [StateMachine].
+			</description>
+		</signal>
+		<signal name="deactivated">
+			<description>
+				Emitted when the state is deactivated by the [StateMachine].
+			</description>
+		</signal>
+		<signal name="started">
+			<param index="0" name="state_input" type="StateInput" />
+			<description>
+				Emitted when the state starts the [StateMachine].
+			</description>
+		</signal>
+		<signal name="stopped">
+			<description>
+				Emitted when the state stops the [StateMachine].
+			</description>
+		</signal>
+		<signal name="transition_added">
+			<param index="0" name="transition" type="StateTransition" />
+			<description>
+				Emitted when a new [StateTransition] is added to the state.
+			</description>
+		</signal>
+		<signal name="transition_removed">
+			<param index="0" name="transition" type="StateTransition" />
+			<description>
+				Emitted when a [StateTransition] is removed from the state.
+			</description>
+		</signal>
+	</signals>
+</class>

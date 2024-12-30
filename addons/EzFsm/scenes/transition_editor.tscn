@@ -1,6 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://dgrub3fr6h6k5"]
+[gd_scene load_steps=7 format=3 uid="uid://dgrub3fr6h6k5"]
 
 [ext_resource type="Script" path="res://addons/EzFsm/scripts/transition_editor.gd" id="1_71kkg"]
+[ext_resource type="Texture2D" uid="uid://ytsf8i4jawd1" path="res://addons/EzFsm/icons/ArrowUp.svg" id="2_770nl"]
+[ext_resource type="Texture2D" uid="uid://drov25wawp1ul" path="res://addons/EzFsm/icons/ArrowDown.svg" id="3_d1vup"]
 [ext_resource type="Script" path="res://addons/EzFsm/scripts/script_attacher.gd" id="3_kkgpj"]
 [ext_resource type="Texture2D" uid="uid://dpejuy8j6ohpd" path="res://addons/EzFsm/icons/StateTransitionWarning.svg" id="3_vcp8w"]
 
@@ -12,15 +14,33 @@ offset_bottom = 62.0
 script = ExtResource("1_71kkg")
 transition = SubResource("StateTransition_hsck2")
 
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 0
+alignment = 1
+
+[node name="MoveUpButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+icon = ExtResource("2_770nl")
+flat = true
+
+[node name="MoveDownButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+icon = ExtResource("3_d1vup")
+flat = true
+
 [node name="LabelButton" type="Button" parent="."]
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 2
 tooltip_text = "No script attached, no transition will occur.
 No state to transition from.
 No state to transition to."
 mouse_filter = 1
 text = "..."
 icon = ExtResource("3_vcp8w")
+flat = true
 
 [node name="Spacer" type="Control" parent="."]
 custom_minimum_size = Vector2(24, 0)

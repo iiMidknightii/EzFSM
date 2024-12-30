@@ -1,6 +1,6 @@
 extends StateTransition
 
-func _physics_process(delta: float) -> bool:
+func _physics_process(_delta: float) -> bool:
 	if context:
 		if context.count <= 0:
 			var input := StateInput.new()

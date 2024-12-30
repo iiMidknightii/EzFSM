@@ -11,6 +11,7 @@
 namespace godot::ez_fsm {
 
 class StateMachine;
+class StateTransition;
 
 class State : public Resource {
     GDCLASS(State, Resource)
@@ -26,6 +27,13 @@ public:
 
     bool can_transition_to_self() const;
     void allow_transition_to_self(bool p_allow);
+
+    Ref<StateTransition> add_transition_to(const Ref<State> &p_to);
+    Ref<StateTransition> get_transition_to(const Ref<State> &p_to) const;
+    TypedArray<StateTransition> get_all_transitions() const;
+    int64_t get_transition_priority(Ref<StateTransition> p_transition) const;
+    void move_transition_priority(Ref<StateTransition> p_transition, uint64_t p_priority);
+    void remove_transition(Ref<StateTransition> p_transition);
 
     bool has_sibling(StringName const &p_name) const;
     Ref<State> get_sibling(StringName const &p_name) const;
@@ -71,9 +79,12 @@ private:
     bool enabled { true };
     bool transitions_to_self { false };
 
+    TypedArray<StateTransition> transitions;
     StateMachine *machine = nullptr;
 
     void _set_state_machine(StateMachine *p_machine);
+    void _set_all_transitions(TypedArray<StateTransition> p_transitions);
+    Ref<StateTransition> _get_transition(uint64_t p_idx) const;
 
 #ifdef DEBUG_ENABLED
     Color node_color = Color::get_named_color(Color::find_named_color("DARK_GRAY"));

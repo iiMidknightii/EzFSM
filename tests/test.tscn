@@ -1,40 +1,47 @@
-[gd_scene load_steps=11 format=3 uid="uid://cwkikbj80pakk"]
+[gd_scene load_steps=13 format=3 uid="uid://cwkikbj80pakk"]
 
 [ext_resource type="Script" path="res://tests/test_context.gd" id="1_7i6l2"]
 [ext_resource type="Script" path="res://tests/test_state1.gd" id="2_vcgji"]
 [ext_resource type="Script" path="res://tests/test_state2.gd" id="3_kdcin"]
 [ext_resource type="Script" path="res://tests/test_machine.gd" id="3_pclob"]
-[ext_resource type="Script" path="res://tests/test_transition1.gd" id="4_egqni"]
-[ext_resource type="Script" path="res://tests/test_transition2.gd" id="5_73yam"]
+[ext_resource type="Script" path="res://tests/test_transition1.gd" id="3_uqxcb"]
+[ext_resource type="Script" path="res://tests/test_transition2.gd" id="5_h31g7"]
 
-[sub_resource type="State" id="State_b1h8s"]
+[sub_resource type="StateTransition" id="StateTransition_slysd"]
+_to_state = &"Test2"
+script = ExtResource("3_uqxcb")
+
+[sub_resource type="State" id="State_u4pb0"]
 state_name = &"Test1"
-node_color = Color(0.508932, 0.205349, 0.160842, 0.9)
-node_position = Vector2(460, 140)
+transitions = Array[StateTransition]([SubResource("StateTransition_slysd")])
+_node_color = Color(0.603538, 0.279451, 0.229903, 0.9)
+_node_position = Vector2(420, 600)
 script = ExtResource("2_vcgji")
 
-[sub_resource type="State" id="State_0paap"]
+[sub_resource type="StateTransition" id="StateTransition_4lm7a"]
+_to_state = &"Test1"
+script = ExtResource("5_h31g7")
+
+[sub_resource type="State" id="State_l6mm5"]
 state_name = &"Test2"
-node_color = Color(0.169863, 0.330804, 0.546003, 0.9)
-node_position = Vector2(460, 360)
+transitions = Array[StateTransition]([SubResource("StateTransition_4lm7a")])
+_node_color = Color(0.462086, 0.737676, 0.531498, 0.9)
+_node_position = Vector2(420, 360)
 script = ExtResource("3_kdcin")
 
-[sub_resource type="StateTransition" id="StateTransition_2lx6d"]
-_from_state = &"Test1"
-_to_state = &"Test2"
-script = ExtResource("4_egqni")
+[sub_resource type="State" id="State_aloq1"]
+state_name = &"NewState"
+_node_position = Vector2(-200.973, -136.08)
 
-[sub_resource type="StateTransition" id="StateTransition_wf5vu"]
-_from_state = &"Test2"
-_to_state = &"Test1"
-script = ExtResource("5_73yam")
+[sub_resource type="State" id="State_eauqf"]
+state_name = &"NewState2"
+_node_position = Vector2(220, 0)
 
 [node name="Node" type="Node"]
 script = ExtResource("1_7i6l2")
 
 [node name="StateMachine" type="StateMachine" parent="." node_paths=PackedStringArray("context")]
-states = Array[State]([SubResource("State_b1h8s"), SubResource("State_0paap")])
-_default_state = &"Test1"
-transitions = Array[StateTransition]([SubResource("StateTransition_2lx6d"), SubResource("StateTransition_wf5vu")])
+_states = Array[State]([SubResource("State_u4pb0"), SubResource("State_l6mm5"), SubResource("State_aloq1"), SubResource("State_eauqf")])
+_default_state = &"Test2"
 context = NodePath("..")
 script = ExtResource("3_pclob")

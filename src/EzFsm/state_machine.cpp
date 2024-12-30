@@ -26,15 +26,16 @@ using namespace godot::ez_fsm;
     }                                                                                                           \
 \
     if (active_state.is_valid()) {                                                                              \
-        for (uint64_t idx = 0; idx < active_transitions_idx.size(); ++idx) {                                    \
-            Ref<StateTransition> transition = _get_transition(active_transitions_idx[idx]);                     \
+        TypedArray<StateTransition> active_transitions = active_state->get_all_transitions();                   \
+        for (uint64_t idx = 0; idx < active_transitions.size(); ++idx) {                                        \
+            Ref<StateTransition> transition = cast_to<StateTransition>(active_transitions[idx]);                \
             bool do_transition = false;                                                                         \
-            GDVIRTUAL_CALL_PTR(transition, p_method, __VA_ARGS__, do_transition);                               \
+            GDVIRTUAL_CALL_PTR(transition, ##p_method##, __VA_ARGS__, do_transition);                           \
             if (do_transition) {                                                                                \
-                transition_to(transition->get_to_state()->get_state_name(),                                     \
-                        transition->input);                                                                     \
-                transition->input = Ref<StateInput>();                                                          \
-                return;                                                                                         \
+                bool success = transition_to(transition->to_state_name, transition->input);                     \
+                if (success) {                                                                                  \
+                    break;                                                                                      \
+                }                                                                                               \
             }                                                                                                   \
         }                                                                                                       \
     }
@@ -49,11 +50,8 @@ void StateMachine::_validate_property(PropertyInfo &p_prop) const {
 PackedStringArray StateMachine::_get_configuration_warnings() const {
     PackedStringArray out;
 
-    if (states.size() == 0) {
+    if (get_all_states().size() == 0) {
         out.append("No states added.  Add states to enable functionality.");
-    }
-    if (transitions.size() == 0) {
-        out.append("No transitions between states.  Add transitions so the active state may change.");
     }
     if (get_default_state().is_null()) {
         out.append("Invalid default state provided.  The state machine will be unable to start.");
@@ -82,19 +80,6 @@ void StateMachine::_notification(int p_what) {
                 double delta = get_physics_process_delta_time();
                 EVALUATE_STATES(_physics_process, delta)
             }
-        } break;
-
-        case NOTIFICATION_EDITOR_PRE_SAVE: {
-            TypedArray<StateTransition> keepers;
-            for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-                Ref<StateTransition> transition = _get_transition(idx);
-                if (transition->get_from_state() != nullptr) {
-                    keepers.push_back(transition);
-                }
-            }
-
-            transitions = keepers;
-
         } break;
     }
 }
@@ -188,11 +173,31 @@ Ref<State> StateMachine::get_state(const StringName &p_state) const {
 }
 
 StringName StateMachine::increment_state_name(const StringName &p_name) const {
-    StringName out = p_name;
+    String out = p_name;
 
-    uint64_t k = 2;
+    bool has_num = false;
+    uint64_t num = -1;
+    for (uint64_t idx = 0; idx < out.length(); ++idx) {
+        String tmp = out.right(-idx);
+        if (tmp.is_valid_int()) {
+            num = tmp.to_int();
+            has_num = true;
+        } else {
+            break;
+        }
+    }
+
+    if (!has_num) {
+        num = 2;
+    }
+
     while (has_state(out)) {
-        out = p_name + String::num_int64(k++);
+        if (has_num) {
+            out = out.trim_suffix(itos(num));
+        } else {
+            has_num = true;
+        }
+        out = out + itos(++num);
     }
 
     return out;
@@ -234,7 +239,11 @@ void StateMachine::set_default_state(const Ref<State> &p_state) {
 }
 
 Ref<State> StateMachine::get_active_state() const {
-    return _get_state(active_state_idx);
+    if (running) {
+        return _get_state(active_state_idx);
+    } else {
+        return Ref<State>();
+    }
 }
 
 Ref<State> StateMachine::add_state(const StringName &p_name) {
@@ -264,109 +273,65 @@ void StateMachine::remove_state(Ref<State> p_state) {
         }
         states.erase(p_state);
         p_state->_set_state_machine(nullptr);
-        p_state->disconnect("changed", callable_mp(this, &StateMachine::_on_state_name_changed));
         update_configuration_warnings();
         emit_signal("state_removed", p_state);
     }
 }
 
-Ref<StateTransition> StateMachine::add_transition(const Ref<State> &p_from, const Ref<State> &p_to) {
-    Ref<StateTransition> transition = get_transition_between_states(p_from, p_to);
-    ERR_FAIL_NULL_V(p_from, transition);
-    ERR_FAIL_NULL_V(p_to, transition);
+Ref<StateTransition> StateMachine::add_transition_between(const Ref<State> &p_from, const Ref<State> &p_to) {
+    ERR_FAIL_NULL_V(p_from, nullptr);
+    ERR_FAIL_NULL_V(p_to, nullptr);
 
-    if (transition.is_null()) {
-        transition.instantiate();
-        transition->set_from_state(p_from);
-        transition->set_to_state(p_to);
-        transition->_set_state_machine(this);
-        transitions.append(transition);
-        emit_signal("transition_added", transition);
-        update_configuration_warnings();
-    }
-
-    Ref<State> active_state = get_active_state();
-    if (active_state.is_valid() && active_state == transition->get_from_state()) {
-        active_transitions_idx.push_back(transitions.find(transition));
-    }
-
+    Ref<StateTransition> transition = p_from->add_transition_to(p_to);
     return transition;
 }
 
 void StateMachine::remove_transition(Ref<StateTransition> p_transition) {
-    if (p_transition.is_valid() && transitions.has(p_transition)) {
-        uint64_t idx = transitions.find(p_transition);
-        if (active_transitions_idx.has(idx)) {
-            active_transitions_idx.erase(idx);
-        }
+    ERR_FAIL_NULL(p_transition);
 
-        transitions.erase(p_transition);
-        p_transition->_set_state_machine(nullptr);
-        emit_signal("transition_removed", p_transition);
-        update_configuration_warnings();
+    for (uint64_t idx = 0; idx < states.size(); ++idx) {
+        Ref<State> state = _get_state(idx);
+        if (state == p_transition->get_from_state()) {
+            state->remove_transition(p_transition);
+            return;
+        }
     }
 }
 
-TypedArray<StateTransition> StateMachine::get_transitions_from_state(const Ref<State> &p_state) const {
+TypedArray<StateTransition> StateMachine::get_transitions_from(const Ref<State> &p_from) const {
+    ERR_FAIL_NULL_V(p_from, TypedArray<StateTransition>());
+
+    return p_from->get_all_transitions();
+}
+
+TypedArray<StateTransition> StateMachine::get_transitions_to(const Ref<State> &p_to) const {
+    ERR_FAIL_NULL_V(p_to, TypedArray<StateTransition>());
+
     TypedArray<StateTransition> out;
-    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-        Ref<StateTransition> transition = _get_transition(idx);
-        if (transition->get_from_state() == p_state) {
-            out.append(transition);
+    for (uint64_t idx = 0; idx < states.size(); ++idx) {
+        Ref<State> state = _get_state(idx);
+        Ref<StateTransition> transition = state->get_transition_to(p_to);
+        if (transition.is_valid()) {
+            out.push_back(transition);
         }
     }
 
     return out;
 }
 
-TypedArray<StateTransition> StateMachine::get_transitions_to_state(const Ref<State> &p_state) const {
-    TypedArray<StateTransition> out;
-    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-        Ref<StateTransition> transition = _get_transition(idx);
-        if (transition->get_to_state() == p_state) {
-            out.append(transition);
-        }
-    }
+Ref<StateTransition> StateMachine::get_transition_between(const Ref<State> &p_from, const Ref<State> &p_to) const {
+    ERR_FAIL_NULL_V(p_from, nullptr);
+    ERR_FAIL_NULL_V(p_to, nullptr);
 
-    return out;
-}
-
-Ref<StateTransition> StateMachine::get_transition_between_states(
-        const Ref<State> &p_in_state, const Ref<State> &p_out_state) const {
-    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-        Ref<StateTransition> transition = _get_transition(idx);
-        if (
-                transition->get_from_state() == p_in_state && 
-                transition->get_to_state() == p_out_state
-        ) {
-            return transition;
-        }
-    }
-
-    return Ref<StateTransition>();
+    return p_from->get_transition_to(p_to);
 }
 
 TypedArray<StateTransition> StateMachine::get_all_transitions() const {
-    return transitions;
-}
-
-void StateMachine::_set_all_transitions(const TypedArray<StateTransition> &p_transitions) {
-    if (running) {
-        stop();
+    TypedArray<StateTransition> out;
+    for (uint64_t idx = 0; idx < states.size(); ++idx) {
+        out.append_array(_get_state(idx)->get_all_transitions());
     }
-
-    active_transitions_idx.clear();
-    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-        Ref<StateTransition> transition = _get_transition(idx);
-        transition->_set_state_machine(nullptr);
-    }
-    transitions.clear();
-
-    transitions.append_array(p_transitions);
-    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-        Ref<StateTransition> transition = _get_transition(idx);
-        transition->_set_state_machine(this);
-    }
+    return out;
 }
 
 Node *StateMachine::get_context() const {
@@ -378,19 +343,16 @@ void StateMachine::set_context(Node *p_context) {
         return;
     }
 
-
     context = p_context;
 
     emit_signal("context_changed", get_context());
     for (uint64_t idx = 0; idx < states.size(); ++idx) {
         Ref<State> state = _get_state(idx);
-        _disconnect_state(state);
         state->emit_changed();
-        _connect_state(state);
-    }
-    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-        Ref<StateTransition> transition = _get_transition(idx);
-        transition->emit_changed();
+        TypedArray<StateTransition> transitions = state->get_all_transitions();
+        for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
+            cast_to<StateTransition>(transitions[idx])->emit_changed();
+        }
     }
 }
 
@@ -446,6 +408,9 @@ bool StateMachine::transition_to(StringName p_state, Ref<StateInput> p_input) {
 
     Ref<State> next_state = get_state(p_state);
     ERR_FAIL_NULL_V_MSG(next_state, false, "Invalid state name passed in.");
+    if (!next_state->is_enabled()) {
+        return false;
+    }
 
     Ref<State> cur_state = get_active_state();
     ERR_FAIL_COND_V_MSG(
@@ -532,14 +497,6 @@ void StateMachine::_activate_state(Ref<State> p_state, Ref<StateInput> p_input) 
             break;
         }
     }
-
-    active_transitions_idx.clear();
-    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-        Ref<StateTransition> transition = _get_transition(idx);
-        if (transition->get_from_state() == p_state) {
-            active_transitions_idx.push_back(idx);
-        }
-    }
 }
 
 void StateMachine::_deactivate_state() {
@@ -550,71 +507,22 @@ void StateMachine::_deactivate_state() {
     prev_state.unref();
 }
 
-void StateMachine::_on_state_name_changed(Ref<State> p_state, const StringName &p_old_name) {
-    _disconnect_state(p_state);
-
-    StringName new_name = p_state->get_state_name();
-
-    for (uint64_t idx = 0; idx < states.size(); ++idx) {
-        Ref<State> state = _get_state(idx);
-        if (state != p_state && state->get_state_name() == new_name) {
-            new_name = increment_state_name(new_name);
-            break;
-        }
-    }
-    
-    p_state->set_state_name(new_name);
-
-    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-        Ref<StateTransition> transition = _get_transition(idx);
-        if (transition->_get_from_state() == p_old_name) {
-            transition->_set_from_state(new_name);
-        }
-        if (transition->_get_to_state() == p_old_name) {
-            transition->_set_to_state(new_name);
-        }
-    }
-
-    _connect_state(p_state);
-}
-
 void StateMachine::_add_state(Ref<State> p_state) {
-    p_state->set_state_name(p_state->get_state_name());
+    ERR_FAIL_NULL(p_state);
     p_state->_set_state_machine(this);
-    _connect_state(p_state);
 }
 
 void StateMachine::_remove_state(Ref<State> p_state) {
+    ERR_FAIL_NULL(p_state);
     p_state->_set_state_machine(nullptr);
-    _disconnect_state(p_state);
-}
-
-void StateMachine::_connect_state(Ref<State> p_state) {
-    ERR_FAIL_NULL(p_state);
-    if (!p_state->is_connected("changed", callable_mp(this, &StateMachine::_on_state_name_changed))) {
-        p_state->connect("changed", 
-            callable_mp(this, &StateMachine::_on_state_name_changed).bind(p_state, p_state->get_state_name()));
-    }
-}
-
-void StateMachine::_disconnect_state(Ref<State> p_state) {
-    ERR_FAIL_NULL(p_state);
-    if (p_state->is_connected("changed", callable_mp(this, &StateMachine::_on_state_name_changed))) {
-        p_state->disconnect("changed", callable_mp(this, &StateMachine::_on_state_name_changed));
-    }
 }
 
 Ref<State> StateMachine::_get_state(uint64_t p_idx) const {
     if (p_idx < 0 || p_idx >= states.size()) {
-        return Ref<State>();
+        return nullptr;
     } else {
         return Ref<State>(states[p_idx]);
     }
-}
-
-Ref<StateTransition> StateMachine::_get_transition(uint64_t p_idx) const {
-    ERR_FAIL_COND_V(p_idx < 0 || p_idx >= transitions.size(), Ref<StateTransition>());
-    return Ref<StateTransition>(transitions[p_idx]);
 }
 
 void StateMachine::_bind_methods() {
@@ -639,12 +547,11 @@ void StateMachine::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_context"), &StateMachine::get_context);
     ClassDB::bind_method(D_METHOD("set_context", "context"), &StateMachine::set_context);
 
-    ClassDB::bind_method(D_METHOD("add_transition", "from_state", "to_state"), &StateMachine::add_transition);
+    ClassDB::bind_method(D_METHOD("add_transition_between", "from_state", "to_state"), &StateMachine::add_transition_between);
     ClassDB::bind_method(D_METHOD("remove_transition", "transition"), &StateMachine::remove_transition);
-    ClassDB::bind_method(D_METHOD("get_transitions_from_state", "state"), &StateMachine::get_transitions_from_state);
-    ClassDB::bind_method(D_METHOD("get_transitions_to_state", "state"), &StateMachine::get_transitions_to_state);
-    ClassDB::bind_method(D_METHOD("get_transition_between_states", "from_state", "to_state"), &StateMachine::get_transition_between_states);
-    ClassDB::bind_method(D_METHOD("_set_all_transitions", "transitions"), &StateMachine::_set_all_transitions);
+    ClassDB::bind_method(D_METHOD("get_transitions_from", "state"), &StateMachine::get_transitions_from);
+    ClassDB::bind_method(D_METHOD("get_transitions_to", "state"), &StateMachine::get_transitions_to);
+    ClassDB::bind_method(D_METHOD("get_transition_between", "from_state", "to_state"), &StateMachine::get_transition_between);
     ClassDB::bind_method(D_METHOD("get_all_transitions"), &StateMachine::get_all_transitions);
 
     ClassDB::bind_method(D_METHOD("is_running"), &StateMachine::is_running);
@@ -653,10 +560,10 @@ void StateMachine::_bind_methods() {
     ClassDB::bind_method(D_METHOD("stop"), &StateMachine::stop);
 
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "auto_start"), "set_auto_start", "will_auto_start");
-    ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "states", PROPERTY_HINT_ARRAY_TYPE, "State", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL), "_set_all_states", "get_all_states");
+    ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "_states", PROPERTY_HINT_ARRAY_TYPE, "State", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL), "_set_all_states", "get_all_states");
     ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "_default_state", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_INTERNAL), "_set_default_state", "_get_default_state");
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "default_state", PROPERTY_HINT_RESOURCE_TYPE, "State", PROPERTY_USAGE_NONE), "set_default_state", "get_default_state");
-    ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "transitions", PROPERTY_HINT_ARRAY_TYPE, "StateTransition", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL), "_set_all_transitions", "get_all_transitions");
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "active_state", PROPERTY_HINT_RESOURCE_TYPE, "State", PROPERTY_USAGE_NONE), "", "get_active_state");
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "context", PROPERTY_HINT_NODE_TYPE, "", PROPERTY_USAGE_DEFAULT, "Node"), "set_context", "get_context");
 
     GDVIRTUAL_BIND(_start, "state", "state_input");
@@ -671,10 +578,6 @@ void StateMachine::_bind_methods() {
         PropertyInfo(Variant::OBJECT, "state", PROPERTY_HINT_RESOURCE_TYPE, "State")));
     ADD_SIGNAL(MethodInfo("context_changed",
         PropertyInfo(Variant::OBJECT, "context", PROPERTY_HINT_NODE_TYPE, "", PROPERTY_USAGE_DEFAULT, "Node")));
-    ADD_SIGNAL(MethodInfo("transition_added",
-        PropertyInfo(Variant::OBJECT, "transition", PROPERTY_HINT_RESOURCE_TYPE, "StateTransition")));
-    ADD_SIGNAL(MethodInfo("transition_removed", 
-        PropertyInfo(Variant::OBJECT, "transition", PROPERTY_HINT_RESOURCE_TYPE, "StateTransition")));
 
     ADD_SIGNAL(MethodInfo("started", 
         PropertyInfo(Variant::OBJECT, "starting_state", PROPERTY_HINT_RESOURCE_TYPE, "State"), 

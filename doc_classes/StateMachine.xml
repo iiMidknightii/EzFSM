@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="StateMachine" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		A general purpose, Finite State Machine for manipulating the state of other nodes.
+	</brief_description>
+	<description>
+		This node allows you to set a [member context] node, add [State] objects and [StateTransition] objects, and manage the overall state of a node or scene.  Each [State] has the ability to perform engine virtual callbacks, such as [method _process], while active or inactive.
+		After an active state is processed, attached [StateTransition] objects are given the chance to evaluate the overall state and determine if a transition to a new state is appropriate.  Only one state is active at a time, though inactive states are still given the chance to do some separate processing if they need to.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="_start" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="state" type="State" />
+			<param index="1" name="state_input" type="StateInput" />
+			<description>
+				A virtual method called when the state machine starts.  Good for putting any initialization code that executes when the machine first activates.
+			</description>
+		</method>
+		<method name="_stop" qualifiers="virtual">
+			<return type="void" />
+			<description>
+				A virtual method called when the state machine stops.
+			</description>
+		</method>
+		<method name="_transition" qualifiers="virtual">
+			<return type="bool" />
+			<param index="0" name="state" type="State" />
+			<param index="1" name="state_input" type="StateInput" />
+			<description>
+				Called before a state transition is executed.  If [code]false[/code] is returned, the transition is aborted and [member active_state] remains active.
+			</description>
+		</method>
+		<method name="add_state">
+			<return type="State" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+				Creates a new [State] with [param name], adds it to the machine, and returns it.
+			</description>
+		</method>
+		<method name="add_transition_between">
+			<return type="StateTransition" />
+			<param index="0" name="from_state" type="State" />
+			<param index="1" name="to_state" type="State" />
+			<description>
+				Creates a new [StateTransition] between [param from_state] and [param to_state] and returns it.
+			</description>
+		</method>
+		<method name="get_all_state_names" qualifiers="const">
+			<return type="StringName[]" />
+			<description>
+				Returns an array with all the [State] names added to the machine.
+			</description>
+		</method>
+		<method name="get_all_states" qualifiers="const">
+			<return type="State[]" />
+			<description>
+				Returns an array of all [State] objects added to the machine.
+			</description>
+		</method>
+		<method name="get_all_transitions" qualifiers="const">
+			<return type="StateTransition[]" />
+			<description>
+				Returns an array of all [StateTransition] objects added to the machine.
+			</description>
+		</method>
+		<method name="get_state" qualifiers="const">
+			<return type="State" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+				Returns the [State] that has matching [param name].  Returns [code]null[/code] if none exist.
+			</description>
+		</method>
+		<method name="get_transition_between" qualifiers="const">
+			<return type="StateTransition" />
+			<param index="0" name="from_state" type="State" />
+			<param index="1" name="to_state" type="State" />
+			<description>
+				Returns the [StateTransition] that executes between [param from_state] and [param to_state].  Returns [code]null[/code] if none exist.
+			</description>
+		</method>
+		<method name="get_transitions_from" qualifiers="const">
+			<return type="StateTransition[]" />
+			<param index="0" name="state" type="State" />
+			<description>
+				Returns an array of [StateTransition] objects from [param state].
+			</description>
+		</method>
+		<method name="get_transitions_to" qualifiers="const">
+			<return type="StateTransition[]" />
+			<param index="0" name="state" type="State" />
+			<description>
+				Returns an array of [StateTransition] objects to [param state].
+			</description>
+		</method>
+		<method name="has_state" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+				Returns [code]true[/code] if [param name] matches the name of an added [State].
+			</description>
+		</method>
+		<method name="increment_state_name" qualifiers="const">
+			<return type="StringName" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+				Checks [param name] against added states, and appends/increments the number at the end of [param name] so it is unique.
+			</description>
+		</method>
+		<method name="is_running" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether the state machine is currently started and processing the active state.
+			</description>
+		</method>
+		<method name="remove_state">
+			<return type="void" />
+			<param index="0" name="state" type="State" />
+			<description>
+				Removes [param state] from the machine.
+			</description>
+		</method>
+		<method name="remove_transition">
+			<return type="void" />
+			<param index="0" name="transition" type="StateTransition" />
+			<description>
+				Removes [param transition] from the machine.
+			</description>
+		</method>
+		<method name="start">
+			<return type="void" />
+			<param index="0" name="state" type="StringName" />
+			<param index="1" name="state_input" type="StateInput" />
+			<description>
+				Starts the state machine, activating [member default_state].
+			</description>
+		</method>
+		<method name="stop">
+			<return type="void" />
+			<description>
+				Stops the state machine, deactivating [member active_state].
+			</description>
+		</method>
+		<method name="transition_to">
+			<return type="bool" />
+			<param index="0" name="state" type="StringName" />
+			<param index="1" name="state_input" type="StateInput" default="null" />
+			<description>
+				Requests that the state machine transition and activate [param state] with [param state_input] as input.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="active_state" type="State" setter="" getter="get_active_state">
+			The currently active [State].  All engine virtual method calls to the state machine will be passed on to this state.
+		</member>
+		<member name="auto_start" type="bool" setter="set_auto_start" getter="will_auto_start" default="true">
+			If [code]true[/code], the state machine will start when [method _ready] is called.
+		</member>
+		<member name="context" type="Node" setter="set_context" getter="get_context">
+			The node that is passed into each state for processing.  This node's overall state is what the state machine will be controlling.
+		</member>
+		<member name="default_state" type="State" setter="set_default_state" getter="get_default_state">
+			The [State] that will activate first when [method start] is called.
+		</member>
+	</members>
+	<signals>
+		<signal name="context_changed">
+			<param index="0" name="context" type="Node" />
+			<description>
+				Emitted when the [member context] node is altered.
+			</description>
+		</signal>
+		<signal name="default_changed">
+			<param index="0" name="state" type="State" />
+			<description>
+				Emitted when the [member default_state] is set.
+			</description>
+		</signal>
+		<signal name="started">
+			<param index="0" name="starting_state" type="State" />
+			<param index="1" name="starting_input" type="StateInput" />
+			<description>
+				Emitted when the state machine calls [method start].
+			</description>
+		</signal>
+		<signal name="state_added">
+			<param index="0" name="state" type="State" />
+			<description>
+				Emitted when a new [State] is added to the machine through [method add_state].
+			</description>
+		</signal>
+		<signal name="state_removed">
+			<param index="0" name="state" type="State" />
+			<description>
+				Emitted when a [State] is removed via [method remove_state].
+			</description>
+		</signal>
+		<signal name="stopped">
+			<param index="0" name="stopping_state" type="State" />
+			<description>
+				Emitted when the state machine calls [method stop].
+			</description>
+		</signal>
+		<signal name="transitioned">
+			<param index="0" name="outgoing_state" type="State" />
+			<param index="1" name="incoming_state" type="State" />
+			<param index="2" name="state_input" type="StateInput" />
+			<description>
+				Emitted immediately after a new state is activated through [method transition_to].
+			</description>
+		</signal>
+	</signals>
+</class>

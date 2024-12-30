@@ -10,7 +10,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 grid_pattern = 1
-connection_lines_curvature = 1.0
 script = ExtResource("1_o7ypp")
 
 [node name="PopupMenu" type="PopupMenu" parent="."]

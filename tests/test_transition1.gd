@@ -1,6 +1,6 @@
 extends StateTransition
 
-func _process(delta: float) -> bool:
+func _process(_delta: float) -> bool:
 	if context:
 		if context.count >= 100:
 			return true

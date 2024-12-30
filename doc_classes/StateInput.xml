@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="StateInput" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		A temporary object to extend and store data for initializing a [State] when it is activated.
+	</brief_description>
+	<description>
+		During the transition checks of a [StateTransition], an object of [code]StateInput[/code] can be created and added to the transitions via [code]set_state_input[/code].  The object will be passed along to the activating State's [code]_can_activate[/code] and [code]_activate[/code] methods.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="previous_state" type="StringName" setter="" getter="get_previous_state">
+			The state name that the state machine is transitioning from.
+		</member>
+	</members>
+</class>

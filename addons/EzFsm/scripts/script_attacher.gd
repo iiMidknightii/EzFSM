@@ -18,18 +18,21 @@ func _init() -> void:
 	add_child(_script_button)
 	_script_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_script_button.icon = ScriptIcon
+	_script_button.flat = true
 
 	_script_extend_button = Button.new()
 	_script_extend_button.pressed.connect(_on_script_extend_button_pressed)
 	add_child(_script_extend_button)
 	_script_extend_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_script_extend_button.icon = ScriptExtendIcon
+	_script_extend_button.flat = true
 
 	_script_remove_button = Button.new()
 	_script_remove_button.pressed.connect(_on_script_remove_button_pressed)
 	add_child(_script_remove_button)
 	_script_remove_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_script_remove_button.icon = ScriptRemoveIcon
+	_script_remove_button.flat = true
 
 
 func set_object(new_object: Object) -> void:

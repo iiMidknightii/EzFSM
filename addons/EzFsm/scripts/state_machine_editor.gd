@@ -41,7 +41,7 @@ func _is_node_hover_valid(from_node: StringName, from_port: int, to_node: String
 	if from_port != from.get_new_transition_port():
 		return false
 
-	if machine.get_transition_between_states(from.state, to.state):
+	if machine.get_transition_between(from.state, to.state):
 		return false
 
 	if from.state == to.state and not from.state.transitions_to_self:
@@ -52,11 +52,17 @@ func _is_node_hover_valid(from_node: StringName, from_port: int, to_node: String
 
 func set_machine(new_machine: StateMachine) -> void:
 	if machine != new_machine:
-		if machine:
-			machine.default_changed.disconnect(_on_default_changed)
+		if is_instance_valid(machine):
+			machine.default_changed.disconnect(_build)
+			for transition: StateTransition in machine.get_all_transitions():
+				if transition.changed.is_connected(_build):
+					transition.changed.disconnect(_build)
 		machine = new_machine
 		if machine:
-			machine.default_changed.connect(_on_default_changed)
+			machine.default_changed.connect(_build.unbind(1))
+			for transition: StateTransition in machine.get_all_transitions():
+				if not transition.changed.is_connected(_build):
+					transition.changed.connect(_build)
 		_build()
 
 
@@ -82,9 +88,9 @@ func _build() -> void:
 		var s_editor := StateEditorScene.instantiate()
 		s_editor.state = state
 		add_child(s_editor)
-		s_editor.position_offset = state.node_position
+		s_editor.position_offset = state._node_position
 		s_editor.set_default(state == machine.default_state)
-		s_editor.default_requested.connect(machine.set_default_state)
+		s_editor.rebuild_requested.connect(_build)
 
 	for transition: StateTransition in machine.get_all_transitions():
 		if not transition.from_state:
@@ -98,6 +104,9 @@ func _build() -> void:
 		if transition.to_state:
 			var t_editor := _get_editor_for_state(transition.to_state)
 			connect_node(f_editor.name, f_idx, t_editor.name, 0)
+
+		if not transition.changed.is_connected(_build):
+			transition.changed.connect(_build)
 
 
 func _on_node_selected(node: Node) -> void:
@@ -114,10 +123,11 @@ func _on_connection_request(from_node: StringName, from_port: int, to_node: Stri
 	var from: StateEditor = get_node(NodePath(from_node))
 	var to: StateEditor= get_node(NodePath(to_node))
 
-	if not from.state or not to.state:
+	if not from.state or not to.state or machine.get_transition_between(from.state, to.state):
 		return
 
-	var new_transition := machine.add_transition(from.state, to.state)
+	var new_transition := machine.add_transition_between(from.state, to.state)
+	new_transition.changed.connect(_build)
 	from.add_transition(new_transition)
 	connect_node(from_node, from.get_transition_port(new_transition), to_node, to_port)
 
@@ -131,7 +141,7 @@ func _on_disconnection_request(from_node: StringName, from_port: int, to_node: S
 	if not from.state or not to.state:
 		return
 
-	var transition := machine.get_transition_between_states(from.state, to.state)
+	var transition := machine.get_transition_between(from.state, to.state)
 	if transition:
 		machine.remove_transition(transition)
 		from.remove_transition(transition)
@@ -152,7 +162,7 @@ func _on_paste_nodes_request() -> void:
 		var node: Node = get_node(NodePath(child))
 		if node is StateEditor and node.state:
 			var new_state: State = machine.add_state(node.state.state_name)
-			new_state.node_position = node.position_offset + Vector2(node.size.x + 4, 4)
+			new_state._node_position = node.position_offset + Vector2(node.size.x + 4, 4)
 
 	_build()
 
@@ -167,8 +177,7 @@ func _on_delete_nodes_request(nodes: Array[StringName]) -> void:
 			if node.state:
 				var transitions: Array[StateTransition]
 				if node.state:
-					transitions.append_array(machine.get_transitions_from_state(node.state))
-					transitions.append_array(machine.get_transitions_to_state(node.state))
+					transitions.append_array(machine.get_transitions_to(node.state))
 
 					machine.remove_state(node.state)
 
@@ -196,7 +205,7 @@ func _on_popup_request(at_position: Vector2) -> void:
 func _on_end_node_move() -> void:
 	for node: Node in get_children():
 		if node is StateEditor and node.state:
-			node.state.node_position = node.position_offset
+			node.state._node_position = node.position_offset
 
 
 func _on_add_state_button_pressed(at_position := Vector2.INF) -> void:
@@ -205,18 +214,11 @@ func _on_add_state_button_pressed(at_position := Vector2.INF) -> void:
 
 	var state := machine.add_state(&"NewState")
 	if at_position.is_finite():
-		state.node_position = at_position
+		state._node_position = at_position
 	else:
-		state.node_position = scroll_offset/zoom + size/2.0/zoom
+		state._node_position = scroll_offset/zoom + size/2.0/zoom
 
 	_build()
 
 	var editor := _get_editor_for_state(state)
 	editor.position_offset -= editor.size/2.0/zoom
-
-
-func _on_default_changed(state: State) -> void:
-	var editor := _get_editor_for_state(state)
-	for child: Node in get_children():
-		if child is StateEditor:
-			child.set_default(child.state == state)

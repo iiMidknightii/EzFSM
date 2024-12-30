@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://ctwpl3i2680me"]
+[gd_scene load_steps=11 format=3 uid="uid://ctwpl3i2680me"]
 
 [ext_resource type="StyleBox" uid="uid://h8oaicy58742" path="res://addons/EzFsm/theme/graph_node_panel.tres" id="1_jlveb"]
 [ext_resource type="Script" path="res://addons/EzFsm/scripts/state_editor.gd" id="1_wa4vx"]
 [ext_resource type="StyleBox" uid="uid://p4khabnx08qw" path="res://addons/EzFsm/theme/graph_node_panel_selected.tres" id="2_7rwd2"]
 [ext_resource type="Texture2D" uid="uid://t5bg71yi05wg" path="res://addons/EzFsm/icons/DefaultState.svg" id="3_0ugg2"]
 [ext_resource type="Texture2D" uid="uid://b3pd0rcj36vxk" path="res://addons/EzFsm/icons/DisabledState.svg" id="4_b5kau"]
+[ext_resource type="Texture2D" uid="uid://boajfh4622yaq" path="res://addons/EzFsm/icons/ColorPick.svg" id="4_keaqg"]
 [ext_resource type="Texture2D" uid="uid://1bbixx71y7jq" path="res://addons/EzFsm/icons/SelfConnect.svg" id="5_8gsmt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gbf8f"]
@@ -27,14 +28,12 @@ bg_color = Color(0.662745, 0.662745, 0.662745, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
-border_width_bottom = 1
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 
 [sub_resource type="State" id="State_u05nq"]
 
 [node name="State1" type="GraphNode"]
-custom_minimum_size = Vector2(240, 0)
 offset_right = 9.0
 offset_bottom = 55.0
 theme_override_styles/panel = ExtResource("1_jlveb")
@@ -51,6 +50,15 @@ slot/0/right_type = 0
 slot/0/right_color = Color(1, 1, 1, 1)
 slot/0/right_icon = null
 slot/0/draw_stylebox = true
+slot/1/left_enabled = false
+slot/1/left_type = 0
+slot/1/left_color = Color(1, 1, 1, 1)
+slot/1/left_icon = null
+slot/1/right_enabled = false
+slot/1/right_type = 0
+slot/1/right_color = Color(1, 1, 1, 1)
+slot/1/right_icon = null
+slot/1/draw_stylebox = true
 script = ExtResource("1_wa4vx")
 state = SubResource("State_u05nq")
 
@@ -60,13 +68,6 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/separation = 8
 alignment = 1
-
-[node name="ColorPickerButton" type="ColorPickerButton" parent="ConnectionPort"]
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
-tooltip_text = "Change the color of the State Node titlebar."
-color = Color(0.463068, 0.463068, 0.463068, 1)
-edit_alpha = false
 
 [node name="DefaultButton" type="Button" parent="ConnectionPort"]
 custom_minimum_size = Vector2(32, 32)
@@ -112,3 +113,24 @@ theme_override_colors/icon_hover_pressed_color = Color(0.35497, 0.437234, 0.5925
 toggle_mode = true
 icon = ExtResource("5_8gsmt")
 flat = true
+
+[node name="ColorButton" type="Button" parent="ConnectionPort"]
+modulate = Color(0.662745, 0.662745, 0.662745, 1)
+layout_mode = 2
+tooltip_text = "Open the color picker to set the titlebar color for this state."
+toggle_mode = true
+icon = ExtResource("4_keaqg")
+flat = true
+
+[node name="ColorPicker" type="ColorPicker" parent="."]
+visible = false
+layout_mode = 2
+color = Color(0.662745, 0.662745, 0.662745, 1)
+edit_alpha = false
+color_mode = 3
+picker_shape = 3
+can_add_swatches = false
+color_modes_visible = false
+sliders_visible = false
+hex_visible = false
+presets_visible = false
