@@ -3,7 +3,7 @@
 
  ## Download
  ### From GitHub.com
- You can download the full repository for EzFSM [here](https://github.com/iiMidknightii/EzFSM).  You can clone this repository by doing `git clone https://github.com/iiMidknightii/EzFSM.git` in the directory of your choosing.
+ You can download the full repository for EzFSM [here](https://github.com/iiMidknightii/EzFSM).  You can clone this repository by doing `git clone https://github.com/iiMidknightii/EzFSM.git` in the directory of your choosing.  If you want precompiled binaries for a specific version of Godot, this is your best method.  I will periodically go through and tag a new version of this repo with new compiled versions of the binaries on major release versions of Godot and godot-cpp.
 
  ### From Godot Asset Library Web
  Head over to [the EzFSM page on the asset library website](https://godotengine.org/asset-library/asset) and click the download button.
@@ -60,6 +60,10 @@ The transition will have a yellow icon if it has no script attached.  Without a 
 
 [!TIP]
 You can set a state as the default by clicking the ![](addons/EzFsm/icons/DefaultState.svg) button, disable a state for activation/processing with the ![](addons/EzFsm/icons/DisabledState.svg) button, allow a state to transition to itself with the ![](addons/EzFsm/icons/SelfConnect.svg) button, and change the color of a state's title bar with the ![](addons/EzFsm/icons/ColorPick.svg) and the color picker that appears.
+
+## Tagged Releases
+* **main** - Binaries target the latest release of Godot (4.3)
+* **godot-4.3** - Binaries target Godot 4.3
 
 ## Contributing
 Feel free to leave any feedback, bug reports, and contributions to the repository at [https://github.com/iiMidknightii/EzFSM](https://github.com/iiMidknightii/EzFSM).
