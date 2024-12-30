@@ -1,5 +1,7 @@
-# EzFSM
+# ![](addons/EzFsm/icons/StateMachine64.svg) EzFSM
  A lightweight, fast Finite State Machine implemented as a C++ GDExtension.
+
+ ![An example of a full StateMachine with several States](screenshots/full_machine.png)
 
  ## Download
  ### From GitHub.com

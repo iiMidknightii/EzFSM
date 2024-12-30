@@ -67,6 +67,3 @@ func _inactive_unhandled_input(event: InputEvent) -> void:
 
 func _inactive_unhandled_key_input(event: InputEvent) -> void:
 	pass
-
-
-
