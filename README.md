@@ -25,8 +25,8 @@ First, to create a state machine, simply add a `StateMachine` node to your scene
 
 ![A basic StateMachine node with attached script.](screenshots/state_machine_node.png)
 
-[!TIP] 
-When you first add a state machine, there will be warnings that tell you that you need to add states and set the default.  They will go away once we start editing the state machine.
+> [!TIP] 
+> When you first add a state machine, there will be warnings that tell you that you need to add states and set the default.  They will go away once we start editing the state machine.
 
 If you have EzFSM enabled in the plugins screen, clicking the state machine node will open a blank graph editor.  You can add the first state by right clicking and selecting `Add State`, or pressing the leftmost button in the toolbar.
 
@@ -38,8 +38,8 @@ This adds a new state to the machine with the name `NewState`.
 
 You can add a custom script to that state with the `Add Script` button.
 
-[!IMPORTANT]
-If you don't add a script to a state, it will not do any processing.
+> [!IMPORTANT]
+> If you don't add a script to a state, it will not do any processing.
 
 ![Adding a script to a new state.](screenshots/adding_state_script.png)
 
@@ -55,17 +55,16 @@ Once connected, the state that can transition *to* the other state will have a t
 
 ![A State with a transition](screenshots/transition.png)
 
-[!IMPORTANT]
-The transition will have a yellow icon if it has no script attached.  Without a script, the transition will always return `false` and therfore never activate.  Attach a script and return `true` in at least one of the virtual methods when you want to continue to the connected State.
+> [!IMPORTANT]
+> The transition will have a yellow icon if it has no script attached.  Without a script, the transition will always return `false` and therfore never activate.  Attach a script and return `true` in at least one of the virtual methods when you want to continue to the connected State.
 
 ![Adding a script to the transition.](screenshots/adding_transition_script.png)
 
-[!TIP]
-You can set a state as the default by clicking the ![](addons/EzFsm/icons/DefaultState.svg) button, disable a state for activation/processing with the ![](addons/EzFsm/icons/DisabledState.svg) button, allow a state to transition to itself with the ![](addons/EzFsm/icons/SelfConnect.svg) button, and change the color of a state's title bar with the ![](addons/EzFsm/icons/ColorPick.svg) and the color picker that appears.
+> [!TIP]
+> You can set a state as the default by clicking the ![](addons/EzFsm/icons/DefaultState.svg) button, disable a state for activation/processing with the ![](addons/EzFsm/icons/DisabledState.svg) button, allow a state to transition to itself with the ![](addons/EzFsm/icons/SelfConnect.svg) button, and change the color of a state's title bar with the ![](addons/EzFsm/icons/ColorPick.svg) and the color picker that appears.
 
 ## Tagged Releases
-* **main** - Binaries target the latest release of Godot (4.3)
-* **godot-4.3** - Binaries target Godot 4.3
+* 1.0 - intial release, targets godot-4.3
 
 ## Contributing
 Feel free to leave any feedback, bug reports, and contributions to the repository at [https://github.com/iiMidknightii/EzFSM](https://github.com/iiMidknightii/EzFSM).
