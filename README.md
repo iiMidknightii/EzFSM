@@ -4,29 +4,29 @@
  ![An example of a full StateMachine with several States](screenshots/full_machine.png)
 
  ## Download
- ### From GitHub.com
- You can download the full repository for EzFSM [here](https://github.com/iiMidknightii/EzFSM).  You can clone this repository by doing `git clone https://github.com/iiMidknightii/EzFSM.git` in the directory of your choosing.  If you want precompiled binaries for a specific version of Godot, this is your best method.  I will periodically go through and tag a new version of this repo with new compiled versions of the binaries on major release versions of Godot and godot-cpp.
+ ### From Godot Asset Library in the Editor
+ Click the `AssetLib` button at the top of the Godot editor and search for `EzFSM`.  From there, you can download it directly into your project.
 
  ### From Godot Asset Library Web
  Head over to [the EzFSM page on the asset library website](https://godotengine.org/asset-library/asset) and click the download button.
 
- ### From Godot Asset Library in the Editor
- Click the `AssetLib` button at the top of the Godot editor and search for `EzFSM`.  From there, you can download it directly into your project.
+ ### From GitHub.com
+ You can download the full repository for EzFSM [here](https://github.com/iiMidknightii/EzFSM).  You can clone this repository by doing `git clone https://github.com/iiMidknightii/EzFSM.git` in the directory of your choosing.  If you want to recompile the binaries for a specific version of Godot or a different platform, this is your best method.  I will periodically go through and tag a new version of this repo with new compiled versions of the binaries on major release versions of Godot and godot-cpp.
 
  ## Installation
  Once you have the files downloaded, there are a couple paths you could take for installation.  The [addons/EzFSM](addons/EzFsm/) and [script_templates](./script_templates/) folders can be directly copied into your project.  It already has the binaries for debug and release builds on Windows and Linux.  From there, you can activate the EzFSM plugin for the state machine graph editor.  
  
  If you wish to build the binaries from source, you'd need to also copy the [src](./src/), [doc_classes](./doc_classes/), and [godot-cpp](./godot-cpp/) folders along with the [SConstruct](./Sconstruct) file.  [This page will tell you how to build the extension from source using the `scons` command](https://docs.godotengine.org/en/stable/tutorials/scripting/gdextension/gdextension_cpp_example.html).
 
-The actual GDExtension classes are in the [addons/EzFSM/bin]() binaries and are added to Godot via [addons/EzFSM/ez_fsm.gdextension]().  The EzFSM plugin at [addons/EzFSM/plugin.cfg]() is just for the state machine graph editor.  This has to be enabled in the `Project`->`Project Settings ...`->`Plugins` screen.
+The actual GDExtension classes are in the [addons/EzFSM/bin](addons/EzFSM/bin) binaries and are added to Godot via [addons/EzFSM/ez_fsm.gdextension]().  The EzFSM plugin at [addons/EzFSM/plugin.cfg](addons/EzFSM/plugin.cfg) is just for the state machine graph editor.  This has to be enabled in the `Project`->`Project Settings ...`->`Plugins` screen.
 
 ## Tutorial
 First, to create a state machine, simply add a `StateMachine` node to your scene.
 
 ![A basic StateMachine node with attached script.](screenshots/state_machine_node.png)
 
-[!TIP] 
-When you first add a state machine, there will be warnings that tell you that you need to add states and set the default.  They will go away once we start editing the state machine.
+> [!TIP] 
+> When you first add a state machine, there will be warnings that tell you that you need to add states and set the default.  They will go away once we start editing the state machine.
 
 If you have EzFSM enabled in the plugins screen, clicking the state machine node will open a blank graph editor.  You can add the first state by right clicking and selecting `Add State`, or pressing the leftmost button in the toolbar.
 
@@ -38,8 +38,8 @@ This adds a new state to the machine with the name `NewState`.
 
 You can add a custom script to that state with the `Add Script` button.
 
-[!IMPORTANT]
-If you don't add a script to a state, it will not do any processing.
+> [!IMPORTANT]
+> If you don't add a script to a state, it will not do any processing.
 
 ![Adding a script to a new state.](screenshots/adding_state_script.png)
 
@@ -55,17 +55,16 @@ Once connected, the state that can transition *to* the other state will have a t
 
 ![A State with a transition](screenshots/transition.png)
 
-[!IMPORTANT]
-The transition will have a yellow icon if it has no script attached.  Without a script, the transition will always return `false` and therfore never activate.  Attach a script and return `true` in at least one of the virtual methods when you want to continue to the connected State.
+> [!IMPORTANT]
+> The transition will have a yellow icon if it has no script attached.  Without a script, the transition will always return `false` and therfore never activate.  Attach a script and return `true` in at least one of the virtual methods when you want to continue to the connected State.
 
 ![Adding a script to the transition.](screenshots/adding_transition_script.png)
 
-[!TIP]
-You can set a state as the default by clicking the ![](addons/EzFsm/icons/DefaultState.svg) button, disable a state for activation/processing with the ![](addons/EzFsm/icons/DisabledState.svg) button, allow a state to transition to itself with the ![](addons/EzFsm/icons/SelfConnect.svg) button, and change the color of a state's title bar with the ![](addons/EzFsm/icons/ColorPick.svg) and the color picker that appears.
+> [!TIP]
+> You can set a state as the default by clicking the ![](addons/EzFsm/icons/DefaultState.svg) button, disable a state for activation/processing with the ![](addons/EzFsm/icons/DisabledState.svg) button, allow a state to transition to itself with the ![](addons/EzFsm/icons/SelfConnect.svg) button, and change the color of a state's title bar with the ![](addons/EzFsm/icons/ColorPick.svg) and the color picker that appears.
 
 ## Tagged Releases
-* **main** - Binaries target the latest release of Godot (4.3)
-* **godot-4.3** - Binaries target Godot 4.3
+* 1.0 - intial release, targets godot-4.3
 
 ## Contributing
 Feel free to leave any feedback, bug reports, and contributions to the repository at [https://github.com/iiMidknightii/EzFSM](https://github.com/iiMidknightii/EzFSM).
