@@ -29,6 +29,7 @@ public:
     void allow_transition_to_self(bool p_allow);
 
     Ref<StateTransition> add_transition_to(const Ref<State> &p_to);
+    void append_transition(Ref<StateTransition> p_transition);
     Ref<StateTransition> get_transition_to(const Ref<State> &p_to) const;
     TypedArray<StateTransition> get_all_transitions() const;
     int64_t get_transition_priority(Ref<StateTransition> p_transition) const;
@@ -71,19 +72,24 @@ public:
 	GDVIRTUAL1(_inactive_unhandled_input, const Ref<InputEvent> &)
 	GDVIRTUAL1(_inactive_unhandled_key_input, const Ref<InputEvent> &)
 
+    State();
+    ~State();
+
 protected:
     static void _bind_methods();
+    void _get_property_list(List<PropertyInfo> *p_list) const;
+    bool _set(const StringName &p_name, const Variant &p_value);
+    bool _get(const StringName &p_name, Variant &r_ret) const;
 
 private:
     StringName state_name;
     bool enabled { true };
     bool transitions_to_self { false };
 
-    TypedArray<StateTransition> transitions;
+    Vector<Ref<StateTransition>> transitions;
     StateMachine *machine = nullptr;
 
     void _set_state_machine(StateMachine *p_machine);
-    void _set_all_transitions(TypedArray<StateTransition> p_transitions);
     Ref<StateTransition> _get_transition(uint64_t p_idx) const;
 
 #ifdef DEBUG_ENABLED

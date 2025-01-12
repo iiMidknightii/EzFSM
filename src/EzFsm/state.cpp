@@ -3,6 +3,7 @@
 #include "state_machine.hpp"
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
 
 
 using namespace godot;
@@ -52,17 +53,22 @@ Ref<StateTransition> State::add_transition_to(const Ref<State> &p_to) {
     Ref<StateTransition> transition = get_transition_to(p_to);
     if (transition.is_null()) {
         transition.instantiate();
-        transition->_set_from_state(this);
-        transition->_set_to_state(p_to->get_state_name());
-        transitions.push_back(transition);
-        emit_changed();
+        transition->set_to_state(p_to);
+        append_transition(transition);
     }
     return transition;
 }
 
+void State::append_transition(Ref<StateTransition> p_transition) {
+    ERR_FAIL_NULL(p_transition);
+    ERR_FAIL_COND(transitions.has(p_transition));
+    p_transition->_set_from_state(this);
+    transitions.push_back(p_transition);
+    emit_changed();
+}
+
 Ref<StateTransition> State::get_transition_to(const Ref<State> &p_to) const {
-    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-        Ref<StateTransition> transition = _get_transition(idx);
+    for (const Ref<StateTransition> &transition : transitions) {
         if (transition->get_to_state() == p_to) {
             return transition;
         }
@@ -72,21 +78,11 @@ Ref<StateTransition> State::get_transition_to(const Ref<State> &p_to) const {
 }
 
 TypedArray<StateTransition> State::get_all_transitions() const {
-    return transitions;
-}
-
-void State::_set_all_transitions(TypedArray<StateTransition> p_transitions) {
-    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-        Ref<StateTransition> transition = _get_transition(idx);
-        transition->_set_from_state(nullptr);
+    TypedArray<StateTransition> out;
+    for (const Ref<StateTransition> &transition : transitions) {
+        out.push_back(transition);
     }
-    transitions.clear();
-
-    transitions = p_transitions;
-    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
-        Ref<StateTransition> transition = _get_transition(idx);
-        transition->_set_from_state(this);
-    }
+    return out;
 }
 
 int64_t State::get_transition_priority(Ref<StateTransition> p_transition) const {
@@ -192,29 +188,15 @@ Vector2 State::get_node_position() const {
 #endif
 
 void State::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("set_state_name", "name"), &State::set_state_name);
-    ClassDB::bind_method(D_METHOD("get_state_name"), &State::get_state_name);
-
-    ClassDB::bind_method(D_METHOD("is_enabled"), &State::is_enabled);
-    ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &State::set_enabled);
-
-    ClassDB::bind_method(D_METHOD("can_transition_to_self"), &State::can_transition_to_self);
-    ClassDB::bind_method(D_METHOD("allow_transition_to_self", "allow"), &State::allow_transition_to_self);
-
     ClassDB::bind_method(D_METHOD("add_transition_to", "to_state"), &State::add_transition_to);
+    ClassDB::bind_method(D_METHOD("append_transition", "transition"), &State::append_transition);
     ClassDB::bind_method(D_METHOD("get_transition_to", "to_state"), &State::get_transition_to);
-    ClassDB::bind_method(D_METHOD("_set_all_transitions", "transitions"), &State::_set_all_transitions);
     ClassDB::bind_method(D_METHOD("get_all_transitions"), &State::get_all_transitions);
     ClassDB::bind_method(D_METHOD("get_transition_priority", "transition"), &State::get_transition_priority);
     ClassDB::bind_method(D_METHOD("move_transition_priority", "transition", "priority"), &State::move_transition_priority);
     ClassDB::bind_method(D_METHOD("remove_transition", "transition"), &State::remove_transition);
-
     ClassDB::bind_method(D_METHOD("has_sibling", "sibling_name"), &State::has_sibling);
     ClassDB::bind_method(D_METHOD("get_sibling", "sibling_name"), &State::get_sibling);
-
-    ClassDB::bind_method(D_METHOD("set_context", "context"), &State::set_context);
-    ClassDB::bind_method(D_METHOD("get_context"), &State::get_context);
-
     ClassDB::bind_method(D_METHOD("get_state_machine"), &State::get_state_machine);
 
     GDVIRTUAL_BIND(_start, "input");
@@ -237,10 +219,20 @@ void State::_bind_methods() {
     GDVIRTUAL_BIND(_inactive_unhandled_input, "event");
     GDVIRTUAL_BIND(_inactive_unhandled_key_input, "event");
 
+    ClassDB::bind_method(D_METHOD("set_state_name", "name"), &State::set_state_name);
+    ClassDB::bind_method(D_METHOD("get_state_name"), &State::get_state_name);
     ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "state_name"), "set_state_name", "get_state_name");
+
+    ClassDB::bind_method(D_METHOD("is_enabled"), &State::is_enabled);
+    ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &State::set_enabled);
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "enabled"), "set_enabled", "is_enabled");
+
+    ClassDB::bind_method(D_METHOD("can_transition_to_self"), &State::can_transition_to_self);
+    ClassDB::bind_method(D_METHOD("allow_transition_to_self", "allow"), &State::allow_transition_to_self);
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "transitions_to_self"), "allow_transition_to_self", "can_transition_to_self");
-    ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "transitions", PROPERTY_HINT_ARRAY_TYPE, "StateTranstition", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL), "_set_all_transitions", "get_all_transitions");
+
+    ClassDB::bind_method(D_METHOD("set_context", "context"), &State::set_context);
+    ClassDB::bind_method(D_METHOD("get_context"), &State::get_context);
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "context", PROPERTY_HINT_NODE_TYPE, "", PROPERTY_USAGE_NONE, "Node"), "set_context", "get_context");
     
     ADD_SIGNAL(MethodInfo("transition_added", 
@@ -262,4 +254,53 @@ void State::_bind_methods() {
     ADD_PROPERTY(PropertyInfo(Variant::COLOR, "_node_color", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL), "_set_node_color", "_get_node_color");
     ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "_node_position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL), "_set_node_position", "_get_node_position");
 #endif
+}
+
+void State::_get_property_list(List<PropertyInfo> *p_list) const {
+    for (uint64_t idx = 0; idx < transitions.size(); ++idx) {
+        const Ref<StateTransition> &transition = transitions[idx];
+        p_list->push_back(PropertyInfo(
+            Variant::OBJECT, "transitions/" + itos(idx), 
+            PROPERTY_HINT_RESOURCE_TYPE, "StateTransition", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_INTERNAL | PROPERTY_USAGE_ALWAYS_DUPLICATE));
+    }
+}
+
+bool State::_set(const StringName &p_name, const Variant &p_value) {
+    if (p_name.begins_with("transitions/")) {
+        Ref<StateTransition> transition = p_value;
+        if (transition.is_null()) {
+            return false;
+        }
+        uint64_t idx = p_name.get_slicec('/', 1).to_int();
+        if (idx >= transitions.size()) {
+            transitions.resize(idx + 1);
+        }
+        transitions.set(idx, transition);
+        transition->_set_from_state(this);
+        return true;
+    }
+
+    return false;
+}
+
+bool State::_get(const StringName &p_name, Variant &r_ret) const {
+    if (p_name.begins_with("transitions/")) {
+        uint64_t idx = p_name.get_slicec('/', 1).to_int();
+        if (idx >= 0 && idx < transitions.size()) {
+            r_ret = transitions[idx];
+            return true;
+        }
+    }
+
+    return false;
+}
+
+State::State() {
+    set_local_to_scene(true);
+}
+
+State::~State() {
+    for (const Ref<StateTransition> &transition : transitions) {
+        transition->_set_from_state(nullptr);
+    }
 }

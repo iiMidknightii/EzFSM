@@ -47,6 +47,13 @@
 				Creates a new [StateTransition] between [param from_state] and [param to_state] and returns it.
 			</description>
 		</method>
+		<method name="append_state">
+			<return type="void" />
+			<param index="0" name="state" type="State" />
+			<description>
+				Adds [param state] to the machine.
+			</description>
+		</method>
 		<method name="get_all_state_names" qualifiers="const">
 			<return type="StringName[]" />
 			<description>

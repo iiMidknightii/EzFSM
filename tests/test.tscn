@@ -1,226 +1,40 @@
-[gd_scene load_steps=21 format=3 uid="uid://cwkikbj80pakk"]
+[gd_scene load_steps=11 format=3 uid="uid://cwkikbj80pakk"]
 
 [ext_resource type="Script" path="res://tests/test_context.gd" id="1_7i6l2"]
 [ext_resource type="Script" path="res://tests/test_state1.gd" id="2_vcgji"]
 [ext_resource type="Script" path="res://tests/test_state2.gd" id="3_kdcin"]
 [ext_resource type="Script" path="res://tests/test_machine.gd" id="3_pclob"]
 [ext_resource type="Script" path="res://tests/test_transition1.gd" id="3_uqxcb"]
-[ext_resource type="Script" path="res://tests/test.gd" id="4_2dpea"]
 [ext_resource type="Script" path="res://tests/test_transition2.gd" id="5_h31g7"]
 
-[sub_resource type="StateTransition" id="StateTransition_slysd"]
-_to_state = &"Test2"
+[sub_resource type="StateTransition" id="StateTransition_afu0s"]
+to_state_name = &"Test2"
 script = ExtResource("3_uqxcb")
 
-[sub_resource type="GDScript" id="GDScript_8af80"]
-script/source = "extends StateTransition
-
-
-
-func _process(delta: float) -> bool:
-	return false
-
-
-func _physics_process(delta: float) -> bool:
-	return false
-
-
-func _input(event: InputEvent) -> bool:
-	return false
-
-
-func _shortcut_input(event: InputEvent) -> bool:
-	return false
-
-
-func _unhandled_input(event: InputEvent) -> bool:
-	return false
-
-
-func _unhandled_key_input(event: InputEvent) -> bool:
-	return false
-"
-
-[sub_resource type="StateTransition" id="StateTransition_cwk3b"]
-_to_state = &"SomeOtherState"
-script = SubResource("GDScript_8af80")
-
-[sub_resource type="StateTransition" id="StateTransition_t3s38"]
-_to_state = &"Test1"
-script = ExtResource("4_2dpea")
-
-[sub_resource type="State" id="State_u4pb0"]
+[sub_resource type="State" id="State_7dv5q"]
 state_name = &"Test1"
-transitions_to_self = true
-transitions = Array[StateTransition]([SubResource("StateTransition_slysd"), SubResource("StateTransition_cwk3b"), SubResource("StateTransition_t3s38")])
-_node_color = Color(0.603538, 0.279451, 0.229903, 0.9)
-_node_position = Vector2(420, 600)
+_node_color = Color(0.275938, 0.728686, 0.839449, 0.9)
+_node_position = Vector2(-169.589, 149.359)
+transitions/0 = SubResource("StateTransition_afu0s")
 script = ExtResource("2_vcgji")
 
-[sub_resource type="StateTransition" id="StateTransition_4lm7a"]
-_to_state = &"Test1"
+[sub_resource type="StateTransition" id="StateTransition_07rua"]
+to_state_name = &"Test1"
 script = ExtResource("5_h31g7")
 
-[sub_resource type="GDScript" id="GDScript_wrndq"]
-script/source = "extends StateTransition
-
-
-
-func _process(delta: float) -> bool:
-	return false
-
-
-func _physics_process(delta: float) -> bool:
-	return false
-
-
-func _input(event: InputEvent) -> bool:
-	return false
-
-
-func _shortcut_input(event: InputEvent) -> bool:
-	return false
-
-
-func _unhandled_input(event: InputEvent) -> bool:
-	return false
-
-
-func _unhandled_key_input(event: InputEvent) -> bool:
-	return false
-"
-
-[sub_resource type="StateTransition" id="StateTransition_dixwx"]
-_to_state = &"SomeOtherState"
-script = SubResource("GDScript_wrndq")
-
-[sub_resource type="State" id="State_l6mm5"]
+[sub_resource type="State" id="State_smdyb"]
 state_name = &"Test2"
-transitions = Array[StateTransition]([SubResource("StateTransition_4lm7a"), SubResource("StateTransition_dixwx")])
-_node_color = Color(0.462086, 0.737676, 0.531498, 0.9)
-_node_position = Vector2(420, 360)
+_node_color = Color(0.889493, 0.51109, 0.798358, 0.9)
+_node_position = Vector2(-180, 360)
+transitions/0 = SubResource("StateTransition_07rua")
 script = ExtResource("3_kdcin")
-
-[sub_resource type="GDScript" id="GDScript_ic61v"]
-script/source = "extends State
-
-
-func _start(input: StateInput) -> void:
-	pass
-
-
-func _can_activate(input: StateInput) -> bool:
-	return true
-
-
-func _activate(input: StateInput) -> void:
-	pass
-
-
-func _deactivate() -> void:
-	pass
-
-
-func _stop() -> void:
-	pass
-
-
-func _active_process(delta: float) -> void:
-	pass
-
-
-func _active_physics_process(delta: float) -> void:
-	pass
-
-
-func _active_input(event: InputEvent) -> void:
-	pass
-
-
-func _active_shortcut_input(event: InputEvent) -> void:
-	pass
-
-
-func _active_unhandled_input(event: InputEvent) -> void:
-	pass
-
-
-func _active_unhandled_key_input(event: InputEvent) -> void:
-	pass
-
-
-func _inactive_process(delta: float) -> void:
-	pass
-
-
-func _inactive_physics_process(delta: float) -> void:
-	pass
-
-
-func _inactive_input(event: InputEvent) -> void:
-	pass
-
-
-func _inactive_shortcut_input(event: InputEvent) -> void:
-	pass
-
-
-func _inactive_unhandled_input(event: InputEvent) -> void:
-	pass
-
-
-func _inactive_unhandled_key_input(event: InputEvent) -> void:
-	pass
-
-
-
-"
-
-[sub_resource type="GDScript" id="GDScript_5hyv7"]
-script/source = "extends StateTransition
-
-
-
-func _process(delta: float) -> bool:
-	return false
-
-
-func _physics_process(delta: float) -> bool:
-	return false
-
-
-func _input(event: InputEvent) -> bool:
-	return false
-
-
-func _shortcut_input(event: InputEvent) -> bool:
-	return false
-
-
-func _unhandled_input(event: InputEvent) -> bool:
-	return false
-
-
-func _unhandled_key_input(event: InputEvent) -> bool:
-	return false
-"
-
-[sub_resource type="StateTransition" id="StateTransition_cutc3"]
-_to_state = &"Test2"
-script = SubResource("GDScript_5hyv7")
-
-[sub_resource type="State" id="State_o1v3r"]
-state_name = &"SomeOtherState"
-transitions = Array[StateTransition]([SubResource("StateTransition_cutc3")])
-_node_color = Color(0.115774, 0.363462, 0.420768, 0.9)
-_node_position = Vector2(1100, 540)
-script = SubResource("GDScript_ic61v")
 
 [node name="Node" type="Node"]
 script = ExtResource("1_7i6l2")
 
 [node name="StateMachine" type="StateMachine" parent="." node_paths=PackedStringArray("context")]
-_states = Array[State]([SubResource("State_u4pb0"), SubResource("State_l6mm5"), SubResource("State_o1v3r")])
-_default_state = &"Test2"
 context = NodePath("..")
+default_state_name = &"Test1"
+states/0 = SubResource("State_7dv5q")
+states/1 = SubResource("State_smdyb")
 script = ExtResource("3_pclob")

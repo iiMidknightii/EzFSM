@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://juet7euk66bj"]
+
+[ext_resource type="PackedScene" uid="uid://cwkikbj80pakk" path="res://tests/test.tscn" id="1_nnutr"]
+
+[node name="Node" type="Node"]
+
+[node name="Node" parent="." instance=ExtResource("1_nnutr")]
+
+[node name="Node2" parent="." instance=ExtResource("1_nnutr")]

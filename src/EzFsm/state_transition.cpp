@@ -23,14 +23,7 @@ void StateTransition::set_to_state(Ref<State> p_state) {
         new_name = p_state->get_state_name();
     }
 
-    _set_to_state(new_name);
-}
-
-void StateTransition::_set_to_state(StringName p_name) {
-    if (p_name != to_state_name) {
-        to_state_name = p_name;
-        emit_changed();
-    }
+    to_state_name = new_name;
 }
 
 Ref<State> StateTransition::get_to_state() const {
@@ -40,10 +33,6 @@ Ref<State> StateTransition::get_to_state() const {
     }
 
     return machine->get_state(to_state_name);
-}
-
-StringName StateTransition::_get_to_state() const {
-    return to_state_name;
 }
 
 
@@ -94,44 +83,8 @@ bool StateTransition::request_transition() {
     }
 }
 
-void StateTransition::_validate_property(PropertyInfo &p_prop) const {
-    if (
-            p_prop.name == StringName("_from_state") || 
-            p_prop.name == StringName("_to_state")
-    ) {
-        StateMachine *machine = get_state_machine();
-
-        PropertyHint hint = PROPERTY_HINT_NONE;
-        String hint_string;
-        uint64_t usage = PROPERTY_USAGE_INTERNAL;
-
-        if (nullptr != machine) {
-            hint = PROPERTY_HINT_ENUM;
-            hint_string = String(",").join(machine->get_all_state_names());
-            usage |= PROPERTY_USAGE_DEFAULT;
-        }
-
-        p_prop.hint = hint;
-        p_prop.hint_string = hint_string;
-        p_prop.usage = usage;
-        p_prop.hint = hint;
-        p_prop.hint_string = hint_string;
-        p_prop.usage = usage;
-    }
-}
-
 void StateTransition::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("_set_to_state", "state_name"), &StateTransition::_set_to_state);
-    ClassDB::bind_method(D_METHOD("_get_to_state"), &StateTransition::_get_to_state);
-
-    ClassDB::bind_method(D_METHOD("get_from_state"), &StateTransition::get_from_state);
-    ClassDB::bind_method(D_METHOD("set_to_state", "state"), &StateTransition::set_to_state);
-    ClassDB::bind_method(D_METHOD("get_to_state"), &StateTransition::get_to_state);
-
     ClassDB::bind_method(D_METHOD("set_state_input", "state_input"), &StateTransition::set_state_input);
-
-    ClassDB::bind_method(D_METHOD("set_context", "context"), &StateTransition::set_context);
-    ClassDB::bind_method(D_METHOD("get_context"), &StateTransition::get_context);
 
     ClassDB::bind_method(D_METHOD("get_state_machine"), &StateTransition::get_state_machine);
     ClassDB::bind_method(D_METHOD("request_transition"), &StateTransition::request_transition);
@@ -143,8 +96,68 @@ void StateTransition::_bind_methods() {
     GDVIRTUAL_BIND(_shortcut_input, "input_event");
     GDVIRTUAL_BIND(_unhandled_key_input, "input_event");
 
-    ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "_to_state", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_INTERNAL), "_set_to_state", "_get_to_state");
+    ClassDB::bind_method(D_METHOD("get_from_state"), &StateTransition::get_from_state);
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "from_state", PROPERTY_HINT_RESOURCE_TYPE, "State", PROPERTY_USAGE_NONE), "", "get_from_state");
+    
+    ClassDB::bind_method(D_METHOD("set_to_state", "state"), &StateTransition::set_to_state);
+    ClassDB::bind_method(D_METHOD("get_to_state"), &StateTransition::get_to_state);
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "to_state", PROPERTY_HINT_RESOURCE_TYPE, "State", PROPERTY_USAGE_NONE), "set_to_state", "get_to_state");
+
+    ClassDB::bind_method(D_METHOD("set_context", "context"), &StateTransition::set_context);
+    ClassDB::bind_method(D_METHOD("get_context"), &StateTransition::get_context);
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "context", PROPERTY_HINT_NODE_TYPE, "", PROPERTY_USAGE_NONE, "Node"), "set_context", "get_context");
+}
+
+void StateTransition::_get_property_list(List<PropertyInfo> *p_list) const {
+    String hint_string = "";
+    StateMachine *machine = get_state_machine();
+    if (nullptr != machine) {
+        hint_string = String(",").join(machine->get_all_state_names());
+    }
+    p_list->push_back(PropertyInfo(
+        Variant::STRING_NAME, "to_state_name", 
+        PROPERTY_HINT_ENUM_SUGGESTION, hint_string, PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_INTERNAL));
+}
+
+bool StateTransition::_property_can_revert(StringName p_name) const {
+    if (p_name == StringName("to_state_name")) {
+        return true;
+    }
+
+    return false;
+}
+
+bool StateTransition::_property_get_revert(StringName p_name, Variant &r_value) const {
+    if (p_name == StringName("to_state_name")) {
+        r_value = "";
+        return true;
+    }
+
+    return false;
+}
+
+bool StateTransition::_set(StringName p_name, const Variant &p_value) {
+    if (p_name == StringName("to_state_name")) {
+        to_state_name = p_value;
+        emit_changed();
+        return true;
+    }
+
+    return false;
+}
+
+bool StateTransition::_get(StringName p_name, Variant &r_value) const {
+    if (p_name == StringName("to_state_name")) {
+        r_value = to_state_name;
+        return true;
+    }
+
+    return false;
+}
+
+StateTransition::StateTransition() {
+    set_local_to_scene(true);
+}
+
+StateTransition::~StateTransition() {
 }

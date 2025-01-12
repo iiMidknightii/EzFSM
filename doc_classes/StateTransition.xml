@@ -79,6 +79,7 @@
 		<member name="from_state" type="State" setter="" getter="get_from_state">
 			The state that will be deactivated if the transition requests.
 		</member>
+		<member name="resource_local_to_scene" type="bool" setter="set_local_to_scene" getter="is_local_to_scene" overrides="Resource" default="true" />
 		<member name="to_state" type="State" setter="set_to_state" getter="get_to_state">
 			The state that will be activated if the transition requests.
 		</member>

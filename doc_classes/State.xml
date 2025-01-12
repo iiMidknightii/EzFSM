@@ -138,6 +138,13 @@
 				Creates a new [StateTransition] to [param to_state].
 			</description>
 		</method>
+		<method name="append_transition">
+			<return type="void" />
+			<param index="0" name="transition" type="StateTransition" />
+			<description>
+				Adds a [StateTransition] to the processing set.
+			</description>
+		</method>
 		<method name="get_all_transitions" qualifiers="const">
 			<return type="StateTransition[]" />
 			<description>
@@ -201,6 +208,7 @@
 		<member name="enabled" type="bool" setter="set_enabled" getter="is_enabled" default="true">
 			A flag that indicates if the state can be transitioned to, or if it will continue processing if already active.
 		</member>
+		<member name="resource_local_to_scene" type="bool" setter="set_local_to_scene" getter="is_local_to_scene" overrides="Resource" default="true" />
 		<member name="state_name" type="StringName" setter="set_state_name" getter="get_state_name" default="&amp;&quot;&quot;">
 			A unique name for the state within the [StateMachine].
 		</member>

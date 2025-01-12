@@ -64,7 +64,8 @@ Once connected, the state that can transition *to* the other state will have a t
 > You can set a state as the default by clicking the ![](addons/EzFsm/icons/DefaultState.svg) button, disable a state for activation/processing with the ![](addons/EzFsm/icons/DisabledState.svg) button, allow a state to transition to itself with the ![](addons/EzFsm/icons/SelfConnect.svg) button, and change the color of a state's title bar with the ![](addons/EzFsm/icons/ColorPick.svg) and the color picker that appears.
 
 ## Tagged Releases
-* 1.0 - intial release, targets godot-4.3
+* v1.0.0 - Initial release, targets godot-4.3
+* v1.0.1 - Patched to make `State` and `StateTransition` local to scene, so instances of `StateMachine` work properly.  **This likely will break any scenes saved with a `StateMachine` in them. Your scripts should be fine, you'll just have to add the states and transitions again.  This is due to a bug where Godot doesn't duplicate subresources in Arrays properly when `local_to_scene` is true.**
 
 ## Contributing
 Feel free to leave any feedback, bug reports, and contributions to the repository at [https://github.com/iiMidknightii/EzFSM](https://github.com/iiMidknightii/EzFSM).
