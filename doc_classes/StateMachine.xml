@@ -16,12 +16,14 @@
 			<param index="1" name="state_input" type="StateInput" />
 			<description>
 				A virtual method called when the state machine starts.  Good for putting any initialization code that executes when the machine first activates.
+				[b]Note:[/b] This method is called before the [member default_state] has its own [code]_start[/code] and [code]_activate[/code] called.
 			</description>
 		</method>
 		<method name="_stop" qualifiers="virtual">
 			<return type="void" />
 			<description>
 				A virtual method called when the state machine stops.
+				[b]Note:[/b] This method is called before the [member active_state] has its own [code]_deactivate[/code] and [code]_stop[/code] called.
 			</description>
 		</method>
 		<method name="_transition" qualifiers="virtual">
@@ -140,7 +142,7 @@
 			<param index="0" name="state" type="StringName" />
 			<param index="1" name="state_input" type="StateInput" />
 			<description>
-				Starts the state machine, activating [member default_state].
+				Starts the state machine, activating [member default_state].  Restarts the machine if [method is_running] is [code]true[/code].
 			</description>
 		</method>
 		<method name="stop">
@@ -163,7 +165,8 @@
 			The currently active [State].  All engine virtual method calls to the state machine will be passed on to this state.
 		</member>
 		<member name="auto_start" type="bool" setter="set_auto_start" getter="will_auto_start" default="true">
-			If [code]true[/code], the state machine will start when [method _ready] is called.
+			If [code]true[/code], the state machine will start [i]after[/i] [method _ready] is called.
+			[b]Note:[/b] Calling [method start] in [method _ready] will [b]NOT[/b] cause a double start.
 		</member>
 		<member name="context" type="Node" setter="set_context" getter="get_context">
 			The node that is passed into each state for processing.  This node's overall state is what the state machine will be controlling.
@@ -189,13 +192,13 @@
 			<param index="0" name="starting_state" type="State" />
 			<param index="1" name="starting_input" type="StateInput" />
 			<description>
-				Emitted when the state machine calls [method start].
+				Emitted at the end of [method start].
 			</description>
 		</signal>
 		<signal name="state_added">
 			<param index="0" name="state" type="State" />
 			<description>
-				Emitted when a new [State] is added to the machine through [method add_state].
+				Emitted when a new [State] is added to the machine through [method add_state] or [method append_state].
 			</description>
 		</signal>
 		<signal name="state_removed">
@@ -207,7 +210,7 @@
 		<signal name="stopped">
 			<param index="0" name="stopping_state" type="State" />
 			<description>
-				Emitted when the state machine calls [method stop].
+				Emitted at the end of [method stop].
 			</description>
 		</signal>
 		<signal name="transitioned">

@@ -81,6 +81,7 @@ private:
 
     Node *context = nullptr;
 
+    void _auto_start();
     Ref<State> _get_state(uint64_t p_idx) const;
     void _activate_state(Ref<State> p_state, Ref<StateInput> p_input);
     void _deactivate_state();

@@ -363,6 +363,12 @@ void StateMachine::stop() {
     set_process_unhandled_key_input(false);
 }
 
+void StateMachine::_auto_start() {
+    if (auto_start && !running) { // just in case user called start() in _ready()
+        start();
+    }
+}
+
 void StateMachine::_ready_transition_input(Ref<StateInput> p_input) {
     if (p_input.is_null()) {
         p_input.instantiate();
@@ -543,8 +549,8 @@ PackedStringArray StateMachine::_get_configuration_warnings() const {
 void StateMachine::_notification(int p_what) {
     switch (p_what) {
         case NOTIFICATION_READY: {
-            if (!Engine::get_singleton()->is_editor_hint() && auto_start) {
-                start();
+            if (!Engine::get_singleton()->is_editor_hint() && auto_start && !running) {
+                callable_mp(this, &StateMachine::_auto_start).call_deferred();
             }
         } break;
 
