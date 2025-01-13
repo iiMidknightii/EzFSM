@@ -174,6 +174,9 @@
 		<member name="default_state" type="State" setter="set_default_state" getter="get_default_state">
 			The [State] that will activate first when [method start] is called.
 		</member>
+		<member name="run_in_editor" type="bool" setter="set_run_in_editor" getter="will_run_in_editor" default="false">
+			If [code]true[/code], the state machine will run in the editor.
+		</member>
 	</members>
 	<signals>
 		<signal name="context_changed">

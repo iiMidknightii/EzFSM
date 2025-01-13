@@ -251,12 +251,25 @@ bool StateMachine::will_auto_start() const {
     return auto_start;
 }
 
+void StateMachine::set_run_in_editor(bool p_run_in_editor) {
+    if (p_run_in_editor != run_in_editor) {
+        run_in_editor = p_run_in_editor;
+        if (run_in_editor && auto_start) {
+            callable_mp(this, &StateMachine::_auto_start).call_deferred();
+        }
+    }
+}
+
+bool StateMachine::will_run_in_editor() const {
+    return run_in_editor;
+}
+
 bool StateMachine::is_running() const {
     return running;
 }
 
 void StateMachine::start(StringName p_state, Ref<StateInput> p_input) {
-    if (Engine::get_singleton()->is_editor_hint()) {
+    if (!_editor_check()) {
         return;
     }
 
@@ -287,7 +300,7 @@ void StateMachine::start(StringName p_state, Ref<StateInput> p_input) {
 }
 
 bool StateMachine::transition_to(StringName p_state, Ref<StateInput> p_input) {
-    if (Engine::get_singleton()->is_editor_hint()) {
+    if (!_editor_check()) {
         return false;
     }
 
@@ -334,7 +347,7 @@ bool StateMachine::transition_to(StringName p_state, Ref<StateInput> p_input) {
 }
 
 void StateMachine::stop() {
-    if (Engine::get_singleton()->is_editor_hint()) {
+    if (!_editor_check()) {
         return;
     }
 
@@ -361,6 +374,10 @@ void StateMachine::stop() {
     set_process_shortcut_input(false);
     set_process_unhandled_input(false);
     set_process_unhandled_key_input(false);
+}
+
+bool StateMachine::_editor_check() const {
+    return run_in_editor || !Engine::get_singleton()->is_editor_hint();
 }
 
 void StateMachine::_auto_start() {
@@ -445,6 +462,10 @@ void StateMachine::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_context"), &StateMachine::get_context);
     ClassDB::bind_method(D_METHOD("set_context", "context"), &StateMachine::set_context);
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "context", PROPERTY_HINT_NODE_TYPE, "", PROPERTY_USAGE_DEFAULT, "Node"), "set_context", "get_context");
+
+    ClassDB::bind_method(D_METHOD("set_run_in_editor", "run_in_editor"), &StateMachine::set_run_in_editor);
+    ClassDB::bind_method(D_METHOD("will_run_in_editor"), &StateMachine::will_run_in_editor);
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "run_in_editor"), "set_run_in_editor", "will_run_in_editor");
 
     ADD_SIGNAL(MethodInfo("state_added",
         PropertyInfo(Variant::OBJECT, "state", PROPERTY_HINT_RESOURCE_TYPE, "State")));
@@ -549,20 +570,20 @@ PackedStringArray StateMachine::_get_configuration_warnings() const {
 void StateMachine::_notification(int p_what) {
     switch (p_what) {
         case NOTIFICATION_READY: {
-            if (!Engine::get_singleton()->is_editor_hint() && auto_start && !running) {
+            if (_editor_check() && auto_start && !running) {
                 callable_mp(this, &StateMachine::_auto_start).call_deferred();
             }
         } break;
 
         case NOTIFICATION_INTERNAL_PROCESS: {
-            if (!Engine::get_singleton()->is_editor_hint() && running) {
+            if (_editor_check() && running) {
                 double delta = get_process_delta_time();
                 EVALUATE_STATES(_process, delta)
             }
         } break;
 
         case NOTIFICATION_INTERNAL_PHYSICS_PROCESS: {
-            if (!Engine::get_singleton()->is_editor_hint() && running) {
+            if (_editor_check() && running) {
                 double delta = get_physics_process_delta_time();
                 EVALUATE_STATES(_physics_process, delta)
             }
@@ -571,35 +592,27 @@ void StateMachine::_notification(int p_what) {
 }
 
 void StateMachine::_input(const Ref<InputEvent> &p_event) {
-    if (Engine::get_singleton()->is_editor_hint() || !running) {
-        return;
+    if (_editor_check() && running) {
+        EVALUATE_STATES(_input, p_event)
     }
-
-    EVALUATE_STATES(_input, p_event)
 }
 
 void StateMachine::_shortcut_input(const Ref<InputEvent> &p_event) {
-    if (Engine::get_singleton()->is_editor_hint() || !running) {
-        return;
+    if (_editor_check() && running) {
+        EVALUATE_STATES(_shortcut_input, p_event)
     }
-
-    EVALUATE_STATES(_shortcut_input, p_event)
 }
 
 void StateMachine::_unhandled_input(const Ref<InputEvent> &p_event) {
-    if (Engine::get_singleton()->is_editor_hint() || !running) {
-        return;
+    if (_editor_check() && running) {
+        EVALUATE_STATES(_unhandled_input, p_event)
     }
-
-    EVALUATE_STATES(_unhandled_input, p_event)
 }
 
 void StateMachine::_unhandled_key_input(const Ref<InputEvent> &p_event) {
-    if (Engine::get_singleton()->is_editor_hint() || !running) {
-        return;
+    if (_editor_check() && running) {
+        EVALUATE_STATES(_unhandled_key_input, p_event)
     }
-
-    EVALUATE_STATES(_unhandled_key_input, p_event)
 }
 
 StateMachine::StateMachine() {

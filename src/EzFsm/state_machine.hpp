@@ -23,6 +23,9 @@ public:
     Node *get_context() const;
     void set_context(Node *p_context);
 
+    void set_run_in_editor(bool p_run_in_editor);
+    bool will_run_in_editor() const;
+
     Ref<State> add_state(const StringName &p_name);
     void append_state(const Ref<State> &p_state);
     bool has_state(const StringName &p_state) const;
@@ -74,6 +77,7 @@ private:
     bool auto_start = true;
     bool running = false;
     bool locked_out = false;
+    bool run_in_editor = false;
 
     Vector<Ref<State>> states;
     StringName default_state_name;
@@ -81,6 +85,7 @@ private:
 
     Node *context = nullptr;
 
+    bool _editor_check() const;
     void _auto_start();
     Ref<State> _get_state(uint64_t p_idx) const;
     void _activate_state(Ref<State> p_state, Ref<StateInput> p_input);
