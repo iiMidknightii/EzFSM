@@ -66,6 +66,7 @@ Once connected, the state that can transition *to* the other state will have a t
 ## Tagged Releases
 * v1.0.0 - Initial release, targets godot-4.3
 * v1.0.1 - Patched to make `State` and `StateTransition` local to scene, so instances of `StateMachine` work properly.  **This likely will break any scenes saved with a `StateMachine` in them. Your scripts should be fine, you'll just have to add the states and transitions again.  This is due to a bug where Godot doesn't duplicate subresources in Arrays properly when `local_to_scene` is true.**
+* v1.0.2 - Ensured `auto_start` functionality takes place *after* `_ready` is called on the machine and its `context`.  Also added the ability to run the state machine in the editor (with `@tool` scripts attached), and ensured propery resource ownership and cleanup.
 
 ## Contributing
 Feel free to leave any feedback, bug reports, and contributions to the repository at [https://github.com/iiMidknightii/EzFSM](https://github.com/iiMidknightii/EzFSM).
