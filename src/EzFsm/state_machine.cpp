@@ -138,6 +138,9 @@ void StateMachine::append_state(const Ref<State> &p_state) {
     bool is_default = states.is_empty();
     states.append(p_state);
     p_state->set_state_name(increment_state_name(p_state->get_state_name()));
+    if (nullptr != p_state->get_state_machine()) {
+        p_state->get_state_machine()->remove_state(p_state);
+    }
     p_state->_set_state_machine(this);
     if (is_default) {
         set_default_state(p_state);
@@ -275,8 +278,8 @@ void StateMachine::start(StringName p_state, Ref<StateInput> p_input) {
 
     ERR_FAIL_COND_MSG(locked_out, "State machine cannot restart while transition is ongoing.");
     
-    Ref<State> starting_state = get_default_state();
-    ERR_FAIL_NULL_MSG(starting_state, "No default state provided, cannot start state machine.");
+    Ref<State> starting_state = p_state.is_empty() ? get_default_state() : get_state(p_state);
+    ERR_FAIL_NULL_MSG(starting_state, "Invalid starting state, cannot start state machine.");
 
     if (running) {
         stop();
@@ -440,7 +443,7 @@ void StateMachine::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_all_transitions"), &StateMachine::get_all_transitions);
 
     ClassDB::bind_method(D_METHOD("is_running"), &StateMachine::is_running);
-    ClassDB::bind_method(D_METHOD("start", "state", "state_input"), &StateMachine::start);
+    ClassDB::bind_method(D_METHOD("start", "state", "state_input"), &StateMachine::start, DEFVAL(""), DEFVAL(Ref<StateInput>()));
     ClassDB::bind_method(D_METHOD("transition_to", "state", "state_input"), &StateMachine::transition_to, DEFVAL(Ref<StateInput>()));
     ClassDB::bind_method(D_METHOD("stop"), &StateMachine::stop);
 
@@ -626,4 +629,5 @@ StateMachine::~StateMachine() {
     for (const Ref<State> &state : states) {
         state->_set_state_machine(nullptr);
     }
+    states.clear();
 }

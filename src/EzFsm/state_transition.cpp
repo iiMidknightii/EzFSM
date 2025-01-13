@@ -160,4 +160,7 @@ StateTransition::StateTransition() {
 }
 
 StateTransition::~StateTransition() {
+    if (from_state.is_valid()) {
+        from_state->remove_transition(this);
+    }
 }

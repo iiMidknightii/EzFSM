@@ -62,6 +62,11 @@ Ref<StateTransition> State::add_transition_to(const Ref<State> &p_to) {
 void State::append_transition(Ref<StateTransition> p_transition) {
     ERR_FAIL_NULL(p_transition);
     ERR_FAIL_COND(transitions.has(p_transition));
+    ERR_FAIL_COND(get_transition_to(p_transition->get_to_state()).is_valid());
+    
+    if (p_transition->get_from_state().is_valid()) {
+        p_transition->get_from_state()->remove_transition(p_transition);
+    }
     p_transition->_set_from_state(this);
     transitions.push_back(p_transition);
     emit_changed();
@@ -300,7 +305,12 @@ State::State() {
 }
 
 State::~State() {
+    if (nullptr != machine) {
+        machine->remove_state(this);
+    }
+
     for (const Ref<StateTransition> &transition : transitions) {
         transition->_set_from_state(nullptr);
     }
+    transitions.clear();
 }

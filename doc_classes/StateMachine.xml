@@ -39,6 +39,7 @@
 			<param index="0" name="name" type="StringName" />
 			<description>
 				Creates a new [State] with [param name], adds it to the machine, and returns it.
+				[b]Note:[/b] If a state with the same name already exists, the name will be incremented to make it unique.
 			</description>
 		</method>
 		<method name="add_transition_between">
@@ -53,7 +54,8 @@
 			<return type="void" />
 			<param index="0" name="state" type="State" />
 			<description>
-				Adds [param state] to the machine.
+				Adds [param state] to the machine.  Increments the [param state]'s name if it is not unique.
+				[b]Note:[/b] If [param state] belongs to another state machine, it will be removed from that machine.
 			</description>
 		</method>
 		<method name="get_all_state_names" qualifiers="const">
@@ -139,10 +141,10 @@
 		</method>
 		<method name="start">
 			<return type="void" />
-			<param index="0" name="state" type="StringName" />
-			<param index="1" name="state_input" type="StateInput" />
+			<param index="0" name="state" type="StringName" default="&quot;&quot;" />
+			<param index="1" name="state_input" type="StateInput" default="null" />
 			<description>
-				Starts the state machine, activating [member default_state].  Restarts the machine if [method is_running] is [code]true[/code].
+				Starts the state machine, activating [member default_state] or [param state] (if provided) with [param state_input].  Restarts the machine if [method is_running] is [code]true[/code].
 			</description>
 		</method>
 		<method name="stop">
