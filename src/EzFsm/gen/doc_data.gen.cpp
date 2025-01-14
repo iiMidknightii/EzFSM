@@ -2,7 +2,7 @@
 
 #include <godot_cpp/godot.hpp>
 
-static const char *_doc_data_hash = "-8124849354139987373";
+static const char *_doc_data_hash = "-8813853580678810282";
 static const int _doc_data_uncompressed_size = 26211;
 static const int _doc_data_compressed_size = 4254;
 static const unsigned char _doc_data_compressed[] = {

@@ -18,16 +18,16 @@ using namespace godot::ez_fsm;
         }                                                                                                       \
                                                                                                                 \
         if (state == active_state) {                                                                            \
-            GDVIRTUAL_CALL_PTR(state, _active##p_method##, __VA_ARGS__);                                        \
+            GDVIRTUAL_CALL_PTR(state, _active##p_method, __VA_ARGS__);                                          \
         } else {                                                                                                \
-            GDVIRTUAL_CALL_PTR(state, _inactive##p_method##, __VA_ARGS__);                                      \
+            GDVIRTUAL_CALL_PTR(state, _inactive##p_method, __VA_ARGS__);                                        \
         }                                                                                                       \
     }                                                                                                           \
                                                                                                                 \
     if (active_state.is_valid()) {                                                                              \
         for (Ref<StateTransition> transition : active_state->transitions) {                                     \
             bool do_transition = false;                                                                         \
-            GDVIRTUAL_CALL_PTR(transition, ##p_method##, __VA_ARGS__, do_transition);                           \
+            GDVIRTUAL_CALL_PTR(transition, p_method, __VA_ARGS__, do_transition);                               \
             if (do_transition) {                                                                                \
                 bool success = transition_to(transition->to_state_name, transition->input);                     \
                 if (success) {                                                                                  \
