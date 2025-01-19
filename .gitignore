@@ -5,7 +5,6 @@
 .import/
 export.cfg
 export_presets.cfg
-*.import
 
 # Imported translations (automatically generated from CSV files)
 *.translation
@@ -15,10 +14,10 @@ export_presets.cfg
 data_*/
 mono_crash.*.json
 
-.vscode/
-
 *.obj
 *.os
-.sconsign.dblite
-
 ~*
+.vscode
+*.dblite
+addons.zip
+tmp.log
