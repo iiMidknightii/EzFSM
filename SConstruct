@@ -28,7 +28,7 @@ lib_name = "ez_fsm"
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(
-        bin_folder + "{}.{}.{}.framework/{}}.{}.{}".format(
+        bin_folder + "{}.{}.{}.framework/{}.{}.{}".format(
             lib_name, env["platform"], env["target"], lib_name, env["platform"], env["target"]
         ),
         source=sources,
